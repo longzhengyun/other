@@ -1,0 +1,31 @@
+<div class="detail-wrap" ng-repeat="value in detailData" ng-if="value.order == detailId">
+	<h1 class="wrap-title">{{::value.name}}</h1>
+	<div class="wrap-cont">
+		<table class="wrap-table">
+			<tbody>
+				<tr>
+					<td rowspan="6" class="book-img"><img ng-src="{{::value.pic}}" /></td>
+					<td><span class="book-title">出版日期：</span>{{::value.date}}</td>
+				</tr>
+				<tr>
+					<td><span class="book-title">作者：</span>{{::value.author}}</td>
+				</tr>
+				<tr>
+					<td><span class="book-title">出版社：</span>{{::value.press}}</td>
+				</tr>
+				<tr>
+					<td><span class="book-title">类型：</span>{{::value.type}}</td>
+				</tr>
+				<tr>
+					<td><span class="book-title">是否有电子书：</span>{{::value.ebook}}</td>
+				</tr>
+				<tr>
+					<td><span class="book-title">定价：</span>{{::value.pirce}}元</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn-item">
+			<a ng-href="#/list/{{::value.order}}" class="btn btn-gray">返回列表</a>
+		</div>
+	</div>
+</div>

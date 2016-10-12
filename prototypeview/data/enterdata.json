@@ -1,0 +1,15 @@
+[
+	{
+		"name": "代理通",
+		"dir": "/offline/mip/"
+	}, {
+		"name": "代理通后台",
+		"dir": "/offline/mip_admin/"
+	}, {
+		"name": "代理通H5",
+		"dir": "/online/h5/dlt_app/"
+	}, {
+		"name": "空气检测仪",
+		"dir": "/online/h5/air_detector/"
+	}
+]

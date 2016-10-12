@@ -1,0 +1,6 @@
+<aside class="aside-wrap">
+	<dl class="aside-cont">
+		<dt ng-bind="menuData.title"></dt>
+		<dd ng-repeat="(key, value) in menuData.option" ng-class="setStyle(key)"><a ng-href="#/list/{{::key}}">{{::value}}</a></dd>
+	</dl>
+</aside>

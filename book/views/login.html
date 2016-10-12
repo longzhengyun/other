@@ -1,0 +1,18 @@
+<div class="login-wrap">
+	<h1 class="wrap-title">图书管理系统</h1>
+	<div class="wrap-cont">
+		<ul class="wrap-form">
+			<li>
+				<label class="item-title">用户名：</label>
+				<input type="text" class="item-input" placeholder="请填写用户名" ng-model="userData.name" />
+			</li>
+			<li>
+				<label class="item-title">密码：</label>
+				<input type="password" class="item-input" placeholder="请填写密码" ng-model="userData.password" />
+			</li>
+			<li class="btn-item">
+				<button class="btn btn-red" ng-click="loginHandler()">登录</button>
+			</li>
+		</ul>
+	</div>
+</div>

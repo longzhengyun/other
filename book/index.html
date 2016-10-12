@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Jary Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+<meta content="email=no" name="format-detection" />
+<meta content="telephone=no" name="format-detection" />
+<meta name="keywords" content="Jary" />
+<meta name="description" content="Jary" />
+<link rel="stylesheet" href="styles/website.css" />
+</head>
+<body>
+<section class="container">
+	<div ui-view="aside"></div>
+	<div ui-view="main"></div>
+	<div ui-view="detail"></div>
+	<div ui-view="add"></div>
+	<div ui-view="login"></div>
+</section>
+<script data-main="script/main" src="script/library/require/require.min.js"></script>
+</body>
+</html>
