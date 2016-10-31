@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>冒泡排序、数组sort排序</title>
+</head>
+<body>
+<script type="text/javascript">
+	var array = [1,20,2,19,3,18,4,17,5,16,6,15,7,14,8,13,9,12,10,11];
+	var up = 'up', down = 'down';//升序 或 降序
+
+	//冒泡排序，时间复杂度 O(n^2) 
+	var algorithm1 = function(array, mode){
+		var length = array.length, tem, i, j, 
+			flag = false;//定义变量为false，表示未交换位置
+		for (i = 0; i < length - 1; i++) {
+			for (j = 0; j < length - 1; j++) {
+				var compare = array[j + 1] < array[j];//比较大小
+				if((mode == 'up' && compare) || (mode == 'down' && !compare)){
+					tem = array[j + 1];
+					array[j + 1] = array[j];
+					array[j] = tem;
+					flag = true;//交换位置，设为true
+				}
+			};
+
+			//算法优化，如果交换位置，将flag设为false，反之跳出循环
+			if(flag){
+				flag = false;
+			}else{
+				break;
+			};
+		};
+		return array;
+	};
+	console.log(algorithm1(array, down));
+
+	//sort排序，时间复杂度 
+	var algorithm2 = function(array, mode){
+		return array.sort(function(a, b){
+			if(mode == 'up'){
+				return a - b;
+			}else if(mode == 'down'){
+				return b - a;
+			}
+		});
+	};
+	console.log(algorithm2(array, up));
+</script>
+</body>
+</html>

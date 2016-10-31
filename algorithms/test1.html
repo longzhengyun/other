@@ -2,27 +2,26 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>二分查找算法</title>
+	<title>线性查找、二分查找</title>
 </head>
 <body>
 <script type="text/javascript">
 	var array = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
 		target = 5;
 
-	//普通查找
+	//线性查找，时间复杂度 O(n)
 	var algorithm1 = function(array, target){
 		for (var i = 0; i < array.length; i++) {
 			console.log(i);
 			if(array[i] == target){
 				return i;
-			}else if(i == (array.length - 1)){
-				return -1;
-			};
+			}
 		};
+		return -1;//未查到，返回-1
 	};
 	console.log(algorithm1(array, target));
 
-	//二分查找，应用条件：有序数组，升序或降序，折半查找
+	//二分查找，时间复杂度 O(logN) 适用于已排序的线性结构
 	var algorithm2 = function(array, target, start, end){
 		if((end - start) == 1){
 			if(array[start] == target){
