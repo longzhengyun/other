@@ -9,10 +9,12 @@
 	var array = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
 		target = 5;
 
-	//线性查找，时间复杂度 O(n)
+	/*
+	线性查找
+	时间复杂度 O(n)
+	*/
 	var algorithm1 = function(array, target){
 		for (var i = 0; i < array.length; i++) {
-			console.log(i);
 			if(array[i] == target){
 				return i;
 			}
@@ -21,7 +23,10 @@
 	};
 	console.log(algorithm1(array, target));
 
-	//二分查找，时间复杂度 O(logN) 适用于已排序的线性结构
+	/*
+	二分查找，适用于已排序的线性结构
+	时间复杂度 O(logN)
+	*/
 	var algorithm2 = function(array, target, start, end){
 		if((end - start) == 1){
 			if(array[start] == target){
@@ -33,7 +38,6 @@
 			return -1;
 		};
 		var center = Math.floor((start + end)/2);
-			console.log(center);
 		if(target != array[center]){
 			return target > array[center] ? algorithm2(array, target, center, end) : algorithm2(array, target, start, center);
 		};

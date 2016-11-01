@@ -2,20 +2,39 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>冒泡排序、数组sort排序</title>
+	<title>数组sort排序、冒泡排序、选择排序、插入排序</title>
 </head>
 <body>
 <script type="text/javascript">
 	var array = [1,20,2,19,3,18,4,17,5,16,6,15,7,14,8,13,9,12,10,11];
 	var up = 'up', down = 'down';//升序 或 降序
 
-	//冒泡排序，时间复杂度 O(n^2) 
+	/*
+	sort排序
+	时间复杂度 O(nlogn)
+	*/
 	var algorithm1 = function(array, mode){
-		var length = array.length, tem, i, j, 
+		return array.sort(function(a, b){
+			if(mode == 'up'){
+				return a - b;
+			}else if(mode == 'down'){
+				return b - a;
+			}
+		});
+	};
+	// console.log(algorithm1(array, up));
+
+	/*
+	冒泡排序，比较相邻两个元素大小交换位置
+	改进版，设置flag标记最后一次交换位置，下次排序从flag开始
+	时间复杂度 O(n^2)
+	*/ 
+	var algorithm2 = function(array, mode){
+		var length = array.length - 1, tem, i, j, compare, 
 			flag = false;//定义变量为false，表示未交换位置
-		for (i = 0; i < length - 1; i++) {
-			for (j = 0; j < length - 1; j++) {
-				var compare = array[j + 1] < array[j];//比较大小
+		for (i = 0; i < length; i++) {
+			for (j = 0; j < length; j++) {
+				compare = array[j + 1] < array[j];//比较大小
 				if((mode == 'up' && compare) || (mode == 'down' && !compare)){
 					tem = array[j + 1];
 					array[j + 1] = array[j];
@@ -33,19 +52,90 @@
 		};
 		return array;
 	};
-	console.log(algorithm1(array, down));
+	// console.log(algorithm2(array, down));
 
-	//sort排序，时间复杂度 
-	var algorithm2 = function(array, mode){
-		return array.sort(function(a, b){
-			if(mode == 'up'){
-				return a - b;
-			}else if(mode == 'down'){
-				return b - a;
-			}
-		});
+	/*
+	冒泡排序
+	改进版，正反向同时对比
+	时间复杂度 O(n) 
+	*/
+	var algorithm3 = function(array, mode){
+		var low = 0, high = array.length - 1, tem, i, compare;
+		while(high > low){
+			for (i = low; i < high; i++) {//正向冒泡，找最大值
+				compare = array[i] > array[i + 1];//比较大小
+				if((mode == 'up' && compare) || (mode == 'down' && !compare)){
+					tem = array[i];
+					array[i] = array[i + 1];
+					array[i + 1] = tem;
+				}
+			};
+			high--;//修改hign值，前移一位
+
+			for (i = high; i > low; i--) {//反向冒泡，找最小值
+				compare = array[i] < array[i - 1];//比较大小
+				if((mode == 'up' && compare) || (mode == 'down' && !compare)){
+					tem = array[i];
+					array[i] = array[i - 1];
+					array[i - 1] = tem;
+				}
+			};
+			low++;//修改low值，后移一位
+		};
+		return array;
 	};
-	console.log(algorithm2(array, up));
+	// console.log(algorithm3(array, up));
+
+	/*
+	选择排序，找到最小(大)值存放在序列起始位置，在剩余序列继续寻找最小(大)值
+	时间复杂度 O(n^2)
+	*/
+	var algorithm4 = function(array, mode){
+		var length = array.length, index, tem, i, j, compare;
+		for (i = 0; i < length - 1; i++) {
+			index = i;
+			for (j = i + 1; j < length; j++) {
+				compare = array[j] < array[index];//比较大小
+				if((mode == 'up' && compare) || (mode == 'down' && !compare)){
+					index = j;
+				}
+			};
+			tem = array[i];
+			array[i] = array[index];
+			array[index] = tem;
+		};
+		return array;
+	};
+	// console.log(algorithm4(array, down));
+
+	/*
+	插入排序，对未排序的数据在已排序的序列根据大小插入位置，从后向前扫描
+	改进版，使用二分查找插入位置
+	时间复杂度 O(n^2)
+	*/
+	var algorithm5 = function(array, mode){
+		var length = array.length, i, j, key, start, end, center, compare;
+		for (i = 0; i < length; i++) {
+			key = array[i], start = 0, end = i - 1;
+			while(start <= end){
+				center = parseInt((start + end)/2);
+				compare = key < array[center];//比较大小
+				if((mode == 'up' && compare) || (mode == 'down' && !compare)){
+					end = center - 1;
+				}else{
+					start = center + 1;
+				};
+			};
+			
+			for (j = i - 1; j >= start; j--) {
+				array[j + 1] = array[j];
+			};
+
+			array[start] = key;
+		};
+		return array;
+	};
+	console.log(algorithm5(array, down));
 </script>
 </body>
 </html>
