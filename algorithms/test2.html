@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>数组sort排序、冒泡排序、选择排序、插入排序</title>
+	<title>数组sort排序、冒泡排序、选择排序、插入排序、希尔排序</title>
 </head>
 <body>
 <script type="text/javascript">
@@ -135,7 +135,29 @@
 		};
 		return array;
 	};
-	console.log(algorithm5(array, down));
+	// console.log(algorithm5(array, up));
+
+	/*
+	希尔排序，插入排序的改进版，优先比较距离较远的元素，又名缩小增量排序
+	时间复杂度 O(nlogn)
+	*/
+	var algorithm6 = function(array, mode){
+		var length = array.length, tem, i, j, gap = 1, num = 5;
+		while(gap < length/num){
+			gap = gap * num + 1;
+		};
+		for (gap; gap > 0; gap = Math.floor(gap/num)) {
+			for (i = gap; i < length; i++) {
+				tem = array[i];
+				for (j = i - gap; j >= 0 && ((mode == 'up' && array[j] > tem) || (mode == 'down' && array[j] < tem)); j-=gap) {
+					array[j + gap] = array[j];
+				};
+				array[j + gap] = tem;
+			}
+		};
+		return array;
+	};
+	console.log(algorithm6(array, down));
 </script>
 </body>
 </html>
