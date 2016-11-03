@@ -2,10 +2,11 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>数组sort排序、冒泡排序、选择排序、插入排序、希尔排序</title>
+	<title>数组sort排序、冒泡排序、选择排序、插入排序、希尔排序、归并排序、快速排序</title>
 </head>
 <body>
 <script type="text/javascript">
+	var url = 'http://web.jobbole.com/87968/';//资料来源
 	var array = [1,20,2,19,3,18,4,17,5,16,6,15,7,14,8,13,9,12,10,11];
 	var up = 'up', down = 'down';//升序 或 降序
 
@@ -27,6 +28,7 @@
 	/*
 	冒泡排序，比较相邻两个元素大小交换位置
 	改进版，设置flag标记最后一次交换位置，下次排序从flag开始
+	稳定排序
 	时间复杂度 O(n^2)
 	*/ 
 	var algorithm2 = function(array, mode){
@@ -57,6 +59,7 @@
 	/*
 	冒泡排序
 	改进版，正反向同时对比
+	稳定排序
 	时间复杂度 O(n) 
 	*/
 	var algorithm3 = function(array, mode){
@@ -88,6 +91,7 @@
 
 	/*
 	选择排序，找到最小(大)值存放在序列起始位置，在剩余序列继续寻找最小(大)值
+	不稳定排序
 	时间复杂度 O(n^2)
 	*/
 	var algorithm4 = function(array, mode){
@@ -111,6 +115,7 @@
 	/*
 	插入排序，对未排序的数据在已排序的序列根据大小插入位置，从后向前扫描
 	改进版，使用二分查找插入位置
+	稳定排序
 	时间复杂度 O(n^2)
 	*/
 	var algorithm5 = function(array, mode){
@@ -139,6 +144,7 @@
 
 	/*
 	希尔排序，插入排序的改进版，优先比较距离较远的元素，又名缩小增量排序
+	不稳定排序
 	时间复杂度 O(nlogn)
 	*/
 	var algorithm6 = function(array, mode){
@@ -157,7 +163,100 @@
 		};
 		return array;
 	};
-	console.log(algorithm6(array, down));
+	// console.log(algorithm6(array, down));
+
+	/*
+	归并排序，先将子序列有序，再将有序子序列合并
+	稳定排序
+	时间复杂度 O(nlogn)
+	*/
+	var algorithm7 = function(array, mode){
+		var mergeSort = function(array){
+			var length = array.length;
+			if(length < 2){
+				return array;
+			};
+			var center = Math.floor(length/2),
+				left = array.slice(0, center),
+				right = array.slice(center);
+			return merge(mergeSort(left), mergeSort(right));
+		};
+
+		var merge = function(left, right){
+			var result = [], compare;
+			while(left.length && right.length){
+				compare = left[0] <= right[0];//比较大小
+				if((mode == 'up' && compare) || (mode == 'down' && !compare)){
+					result.push(left.shift());
+				}else{
+					result.push(right.shift());
+				}
+			};
+			while(left.length){
+				result.push(left.shift());
+			};
+			while(right.length){
+				result.push(right.shift());
+			};
+			return result;
+		};
+
+		return mergeSort(array);
+	};
+	// console.log(algorithm7(array, up));
+
+	/*
+	快速排序，通过一趟排序将待排纪录分隔成独立的两部分，其中一部分纪录的关键字均比另一部分的关键字小，则可分别对这两部分纪录继续进行排序，以达到整个序列有序。
+	不稳定排序
+	时间复杂度 O(nlogn)
+	*/
+	var algorithm8 = function(array, mode){
+		var quickSort = function(array, left, right){
+			if(left < right){
+				var x = array[right], i = left - 1, j, tem;
+				for (j = left; j <= right; j++) {
+					if(array[j] <= x){
+						i++;
+						tem = array[i];
+						array[i] = array[j];
+						array[j] = tem;
+					}
+				};
+				quickSort(array, left, i - 1);
+				quickSort(array, i + 1, right);
+			};
+			return array;
+		};
+
+		return quickSort(array, 0, array.length - 1);
+	};
+	// console.log(algorithm8(array, down));
+
+	/*
+	快速排序
+	不稳定排序
+	时间复杂度 O(nlogn)
+	*/
+	var algorithm9 = function(array, mode){
+		var quickSort = function(array){
+			if(array.length <=1){return array;};
+			var pivotIndex = Math.floor(array.length/2),
+				pivot = array.splice(pivotIndex, 1)[0],
+				left = [], 
+				right = [], i, compare;
+			for (i = 0; i < array.length; i++) {
+				compare = array[i] < pivot;//比较大小
+				if((mode == 'up' && compare) || (mode == 'down' && !compare)){
+					left.push(array[i]);
+				}else{
+					right.push(array[i]);
+				}
+			};
+			return quickSort(left).concat([pivot], quickSort(right));
+		};
+		return quickSort(array);
+	};
+	console.log(algorithm9(array, up));
 </script>
 </body>
 </html>
