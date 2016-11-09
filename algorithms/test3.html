@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>常见的算法问题</title>
+</head>
+<body>
+<script type="text/javascript">
+	//问题1:判断一个单词是否是回文？
+	//解题关键：字符串转数组，颠倒顺序，再转字符串，判断是非相等
+	var question1 = function(){
+		var test = 'level';
+		//Array.reverse()将数组元素顺序颠倒
+		function checkPalindron(str){
+			return str == str.split('').reverse().join('');
+		};
+		return checkPalindron(test);
+	};
+	console.log(question1());
+
+	//问题2:去掉一组整形数组重复的值
+	//解题关键：利用Object的key来剔除重复值
+	var question2 = function(){
+		var test = [1,13,24,11,11,14,1,2];
+		function unique(arr){
+			var hashTable = {};
+			var data = [];
+			for (var i = 0; i < arr.length; i++) {
+				if(!hashTable[arr[i]]){//将整形数组的值当作对象下标来判断是否已被占用
+					hashTable[arr[i]] = true;
+					data.push(arr[i]);
+				}
+			}
+			return data;
+		};
+		return unique(test);
+	};
+	console.log(question2());
+
+	//问题3:统计一个字符串出现最多的字母
+	//解题关键：利用对象键值特性计数
+	var question3 = function(){
+		var test = 'aaabbbcccdddabcdeee';
+		function findMaxDuplicateChar(str){
+			if(str.length == 1){
+				return str;
+			};
+			//将字符串字符当作对象下标，对其值做计数累加
+			var charObj = {};
+			for (var i = 0; i < str.length; i++) {
+				if(!charObj[str.charAt(i)]){//String.charAt()返回指定位置字符
+					charObj[str.charAt(i)] = 1;
+				}else{
+					charObj[str.charAt(i)] += 1;
+				}
+			};
+			//遍历对象，根据值的大小判断最大值，如相等则并存
+			var maxChar = '', 
+				maxValue = 1;
+			for (var k in charObj) {
+				if(charObj[k] > maxValue){
+					maxChar = k;
+					maxValue = charObj[k];
+				}else if(charObj[k] == maxValue){
+					maxChar = maxChar + ',' + k;
+				}
+			};
+			return maxChar;
+		};
+		return findMaxDuplicateChar(test);
+	};
+	console.log(question3());
+</script>
+</body>
+</html>
