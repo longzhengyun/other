@@ -38,7 +38,7 @@
 	console.log(question2());
 
 	//问题3:统计一个字符串出现最多的字母
-	//解题关键：利用对象键值特性计数
+	//解题关键：利用Object键值特性计数
 	var question3 = function(){
 		var test = 'aaabbbcccdddabcdeee';
 		function findMaxDuplicateChar(str){
@@ -70,6 +70,77 @@
 		return findMaxDuplicateChar(test);
 	};
 	console.log(question3());
+
+	//问题4:不借助临时变量，进行两个整数的交换
+	//解题关键：利用a=a+(b-a)来代替a=b赋值
+	var question4 = function(){
+		var a = 1, b = 3;
+		function swap(a, b){
+			b = b - a;
+			a = a + b;
+			b = a - b;
+			return [a, b];
+		};
+		return swap(a, b);
+	};
+	console.log(question4());
+
+	//问题5:生成一个有限度的斐波那契数列的曲线
+	//解题关键：斐波那契数列的定义 fibo[i] = fibo[i - 1] + fibo[ i - 2]
+	var question5 = function(){
+		var test = 9;
+		function getFibonacci(n){
+			var fibarr = [], i = 0;
+			while(i < n){
+				if (i <= 1) {
+					fibarr.push(i);
+				}else{
+					fibarr.push(fibarr[i - 1] + fibarr[i - 2]);
+				};
+				i ++;
+			}
+			return fibarr;
+		};
+		return getFibonacci(test);
+	};
+	console.log(question5());
+
+	//问题6:找出下列正数组的最大差值
+	//解题关键：最大差值是数组中最大值与最小值的差
+	var question6 = function(){
+		var test = [10, 4, 11, 7, 8, 9];
+		function getMaxProfit(arr){
+			var minPrice = arr[0];
+			var maxProfit = 0;
+			for (var i = 0; i < arr.length; i++) {
+				var currentPrice = arr[i];
+				minPrice = Math.min(minPrice, currentPrice);
+
+				var potentialProfit = currentPrice - minPrice;
+
+				maxProfit = Math.max(maxProfit, potentialProfit);
+			}
+			return maxProfit;
+		};
+		return getMaxProfit(test);
+	};
+	console.log(question6());
+
+	//问题7:随机生成指定长度的字符串
+	//解题关键：定义模板内容，随机获取模板内字符，拼接。
+	var question7 = function(){
+		var test = 32;
+		function randomString(n){
+			var str = 'abcdefghijklmnopqrstuvwxyz9876543210';
+			var tmp = '', l = str.length;
+			for (var i = 0; i < n; i++) {
+				tmp += str.charAt(Math.floor(Math.random() * l));
+			};
+			return tmp;
+		};
+		return randomString(test);
+	};
+	console.log(question7());
 </script>
 </body>
 </html>
