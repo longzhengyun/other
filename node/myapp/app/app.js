@@ -37,3 +37,20 @@ eventEmitter.on('data_received', function(){
 eventEmitter.emit('connection');
 
 console.log('程序执行完毕！');
+
+eventEmitter.removeListener('connection', connectHandler);
+
+console.log(eventEmitter.listenerCount('connection'));
+
+var buf = new Buffer(2);
+console.log(buf.write('ab'));
+console.log(buf.toString());
+console.log(buf.toJSON());
+
+var buf2 = new Buffer(2);
+console.log(buf2.write('b'));
+// var buf3 = Buffer.concat([buf, buf2]);
+// console.log(buf3.toString());
+
+var result = buf2.compare(buf);
+console.log(result);
