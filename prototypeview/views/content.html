@@ -1,0 +1,14 @@
+<ul class="html-list" ng-if="prototypeData">
+    <li class="list-item clearfix" ng-repeat="data in prototypeData | orderBy:'-date' | filter:{title:'!无'} | filter:userSearch">
+        <span class="item title" ng-bind="data.title"></span>
+        <span class="item name" ng-bind="data.name"></span>
+        <span class="item date" ng-bind="data.date"></span>
+        <a ng-href="{{data.dir}}{{data.name}}?r={{userBranch}}" target="_blank" class="link"></a>
+    </li>
+    <li class="list-item clearfix" ng-repeat="data in prototypeData | orderBy:'-date' | filter:{title:'无'} | filter:userSearch">
+        <span class="item title" ng-bind="data.title"></span>
+        <span class="item name" ng-bind="data.name"></span>
+        <span class="item date" ng-bind="data.date"></span>
+        <a ng-href="{{data.dir}}{{data.name}}?r={{userBranch}}" target="_blank" class="link"></a>
+    </li>
+</ul>

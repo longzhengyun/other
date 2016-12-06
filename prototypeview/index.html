@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="app">
 <head>
 <meta charset="UTF-8">
 <title>原型阅览</title>
@@ -10,72 +10,11 @@
 <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-<div class="section-wrap" ng-app="app" ng-controller="mainController" dom-directive>
-	<!-- header -->
-	<div class="header">
-		<div class="wrap clearfix">
-			<div class="filter-module">
-				<div ng-if="!localData">
-					<ui-select class="in-branchs" ng-model="userBranchs.selected">
-						<ui-select-match placeholder="选择分支"><span ng-bind="$select.selected"></span></ui-select-match>
-						<ui-select-choices repeat="item in userBranchs | filter: $select.search">
-							<span ng-bind-html="item | highlight: $select.search"></span>
-						</ui-select-choices>
-					</ui-select>
-					<ui-select class="in-branchs" ng-model="userProjects.selected" ng-keyup="myKeyup($event, userProjects.selected, loadBranch)">
-						<ui-select-match placeholder="选择项目"><span ng-bind="$select.selected"></span></ui-select-match>
-						<ui-select-choices repeat="item in userProjects | filter: $select.search" ng-click="loadBranch($select.selected)">
-							<span ng-bind-html="item | highlight: $select.search"></span>
-						</ui-select-choices>
-					</ui-select>
-				</div>
-				<div ng-class="{'in-dir':!localData}">
-					<ui-select ng-model="dirList.selected" ng-keyup="myKeyup($event, dirList.selected, loadDir)">
-						<ui-select-match placeholder="选择原型目录"><span ng-bind="$select.selected"></span></ui-select-match>
-						<ui-select-choices repeat="item in dirList | filter: $select.search" ng-click="loadDir($select.selected)">
-							<span ng-bind-html="item | highlight: $select.search"></span>
-						</ui-select-choices>
-					</ui-select>
-				</div>
-			</div>
-			<div class="search-module">
-				<div class="search-cont">
-					<input type="text" class="in-search form-control" ng-model="userSearch" placeholder="关键字筛选">
-				</div>
-			</div>
-			<div class="enter-module">
-				<div class="module-title">快捷操作：</div>
-				<div class="module-list">
-					<span class="list-item" ng-repeat="item in enterData"><a href="javascript:;" class="link-item" ng-bind="item.name" ng-click="loadDir(item.dir)"></a></span>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- content -->
-	<div class="content">
-		<ul class="html-list wrap" ng-if="prototypeData">
-			<li class="list-item clearfix" ng-repeat="data in prototypeData | orderBy:'-date' | filter:{title:'!无'} | filter:userSearch">
-				<span class="item title" ng-bind="data.title"></span>
-				<span class="item name" ng-bind="data.name"></span>
-				<span class="item date" ng-bind="data.date"></span>
-				<a ng-href="{{data.dir}}{{data.name}}" target="_blank" class="link" ng-if="localData"></a>
-				<a ng-href="{{data.dir}}{{data.name}}?r={{userBranchs.selected}}" target="_blank" class="link" ng-if="!localData"></a>
-			</li>
-			<li class="list-item clearfix" ng-repeat="data in prototypeData | orderBy:'-date' | filter:{title:'无'} | filter:userSearch">
-				<span class="item title" ng-bind="data.title"></span>
-				<span class="item name" ng-bind="data.name"></span>
-				<span class="item date" ng-bind="data.date"></span>
-				<a ng-href="{{data.dir}}{{data.name}}" target="_blank" class="link" ng-if="localData"></a>
-				<a ng-href="{{data.dir}}{{data.name}}?r={{userBranchs.selected}}" target="_blank" class="link" ng-if="!localData"></a>
-			</li>
-		</ul>
-	</div>
-	<!-- hint -->
-	<div class="hint-module" ng-bind="hintText" ng-if="hintState"></div>
-</div>
+<div class="section-wrap" ui-view="main" dom-directive></div>
 <!-- script library -->
 <script src="scripts/angular.min.js"></script>
 <script src="scripts/angular-sanitize.min.js"></script>
+<script src="scripts/angular-ui-router.js"></script>
 <script src="scripts/select.min.js"></script>
 <!-- script common -->
 <script src="scripts/app.js"></script>

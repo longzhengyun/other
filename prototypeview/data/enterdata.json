@@ -1,15 +1,30 @@
 [
-	{
-		"name": "代理通",
-		"dir": "/offline/mip/"
-	}, {
-		"name": "代理通后台",
-		"dir": "/offline/mip_admin/"
-	}, {
-		"name": "代理通H5",
-		"dir": "/online/h5/dlt_app/"
-	}, {
-		"name": "空气检测仪",
-		"dir": "/online/h5/air_detector/"
-	}
+    {
+        "name": "代理通",
+        "dir": "/offline/mip/"
+    }, {
+        "name": "代理通后台",
+        "dir": "/offline/mip_admin/"
+    }, {
+        "name": "Ebooking",
+        "dir": "/offline/ebooking_v3/"
+    }, {
+        "name": "国内酒店",
+        "dir": "/online/hotels121118/"
+    }, {
+        "name": "海外酒店",
+        "dir": "/online/hotelinternational121211/"
+    }, {
+        "name": "客栈通",
+        "dir": "/offline/cpms/"
+    }, {
+        "name": "客栈通后台",
+        "dir": "/offline/cpms_admin/"
+    }, {
+        "name": "客栈通CRM",
+        "dir": "/offline/cpms_crm/"
+    }, {
+        "name": "网红",
+        "dir": "/offline/web_celebrity/"
+    }
 ]
