@@ -18,37 +18,11 @@ function detect_encoding($str, $array_encoding){
 function characet($data){
     if(!empty($data)){
         $file_type = detect_encoding($data, array('UTF-8', 'GBK', 'LATIN1', 'BIG5'));
-            if( $file_type != 'UTF-8'){
-                $data = iconv($file_type, "UTF-8//IGNORE", $data);
-            }
+        if( $file_type != 'UTF-8'){
+            $data = iconv($file_type, "UTF-8//IGNORE", $data);
         }
+    };
     return $data;
-};
-
-//获取数据
-function get_allfiles($path, &$files){
-    //如果是目录
-    if(is_dir($path)){
-        $dp = dir($path);
-        while ($file = $dp -> read()) {
-            if($file != "." && $file != ".."){
-                get_allfiles($path."/".$file, $files);
-            }
-        };
-        $dp -> close();
-    };
-
-    //如果是文件
-    if(is_file($path)){
-        handler_prototypedata($path, $files);
-    };
-};
-
-function get_prototypedata($dir){
-    $files = array();
-    get_allfiles($dir, $files);
-    print_r($files);
-    return $files;
 };
 
 //处理数据
@@ -80,8 +54,36 @@ function handler_prototypedata($path, &$files){
     }
 };
 
+//获取数据
+function get_allfiles($path, &$files){
+    //如果是目录
+    if(is_dir($path)){
+        $dp = dir($path);
+        while ($file = $dp -> read()) {
+            if($file != "." && $file != ".."){
+                get_allfiles($path."/".$file, $files);
+            }
+        };
+        $dp -> close();
+    };
+
+    //如果是文件
+    if(is_file($path)){
+        handler_prototypedata($path, $files);
+    };
+};
+
+function get_prototypedata($dir){
+    $files = array();
+    get_allfiles($dir, $files);
+    return $files;
+};
+
 //导出数据
 $prototypedata = get_prototypedata($dir_replace);
+
+//添加更新时间戳
+array_push($prototypedata, array('updateTime' => time(), 'dir' => 'Jary'));
 
 //转json
 $json_string = json_encode($prototypedata);

@@ -147,21 +147,8 @@ app.factory('dataService', ['$http', function($http) {
     }
 }]);
 
-app.factory('localService', ['$window', function($window) {
-    return {
-        //存储对象，以JSON格式存储
-        setLocalData: function(key, value) {
-            $window.localStorage[key] = JSON.stringify(value);
-        },
-        //读取对象
-        getLocalData: function(key) {
-            return JSON.parse($window.localStorage[key] || '{}');
-        }
-    }
-}])
-
 //指令
-app.directive('domDirective', ['$window', '$timeout', '$state', 'dataService', 'localService', 'HTMLFILES_URL', 'HTMLDATA_URL', function($window, $timeout, $state, dataService, localService, HTMLFILES_URL, HTMLDATA_URL) {
+app.directive('domDirective', ['$window', '$timeout', '$state', 'dataService', 'HTMLFILES_URL', 'HTMLDATA_URL', function($window, $timeout, $state, dataService, HTMLFILES_URL, HTMLDATA_URL) {
     return {
         restrict: 'AE',
         link: function(scope, element, attrs) {
@@ -203,20 +190,20 @@ app.directive('domDirective', ['$window', '$timeout', '$state', 'dataService', '
                 var htmlFilesBox = document.createElement('div');
                 htmlFilesBox.className = 'html-files';
 
-                //获取本地数据
-                var localData = localService.getLocalData('updateData');
-                var now = new Date().getTime();
-
-                //根据本地缓存获取更新时间，间隔超过28800000毫秒（8小时），即自动更新
-                if((now - localData.date) < 28800000){}else{
-                    localData.date = now;
-                    localService.setLocalData('updateData', localData); //本地存储数据
-
-                    //更新all files数据
-                    dataService.getData(HTMLFILES_URL).success(function() {
-                        console.log('自动更新数据成功！');
+                //判断上次更新时间是否超过8小时，是 则自动更新
+                dataService.getData(HTMLDATA_URL).success(function(data) {
+                    angular.forEach(data, function(value){
+                        if(value.updateTime){
+                            var now = new Date().getTime() / 1000;//时间戳 毫秒转秒
+                            if((now - value.updateTime) >= 28800000){
+                                //更新all files数据
+                                dataService.getData(HTMLFILES_URL).success(function() {
+                                    console.log('自动更新数据成功！');
+                                });
+                            };
+                        };
                     });
-                };
+                });
 
                 //点击更新
                 htmlFilesBox.onclick = function(){
@@ -231,11 +218,6 @@ app.directive('domDirective', ['$window', '$timeout', '$state', 'dataService', '
 
                     //生成all files数据
                     dataService.getData(HTMLFILES_URL).success(function() {
-                        //更新本地数据
-                        now = new Date().getTime();
-                        localData.date = now;
-                        localService.setLocalData('updateData', localData); //本地存储数据
-
                         //显示提示信息
                         hintModule.innerHTML = '更新数据成功！';
 
