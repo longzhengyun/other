@@ -195,7 +195,7 @@ app.directive('domDirective', ['$window', '$timeout', '$state', 'dataService', '
                     angular.forEach(data, function(value){
                         if(value.updateTime){
                             var now = new Date().getTime() / 1000;//时间戳 毫秒转秒
-                            if((now - value.updateTime) >= 28800000){
+                            if((now - value.updateTime) >= 28800){//间隔超过28800秒(8小时)
                                 //更新all files数据
                                 dataService.getData(HTMLFILES_URL).success(function() {
                                     console.log('自动更新数据成功！');
