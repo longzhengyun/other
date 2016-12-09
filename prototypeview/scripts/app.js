@@ -3,7 +3,7 @@ var app = angular.module('app', ['ngSanitize', 'ui.router', 'ui.select']);
 
 //常数
 app.constant('HTMLFILES_URL', 'data/prototypefiles.php');
-app.constant('HTMLDATA_URL', 'data/prototypedata.json?' + new Date().getTime());
+app.constant('HTMLDATA_URL', 'data/prototypedata.json');
 app.constant('ENTER_DATA', 'data/enterdata.json');
 app.constant('PROJECT_URL', 'http://hfdoc.qa.nt.ctripcorp.com/docmapp/getProjects');
 app.constant('BRANCH_URL', 'http://hfdoc.qa.nt.ctripcorp.com/docmapp/getBranches/');
@@ -54,7 +54,7 @@ app.controller('mainController', ['$scope', '$location', '$state', 'dataService'
     };
 
     //获取all files数据
-    dataService.getData(HTMLDATA_URL).success(function(data) {
+    dataService.getData(HTMLDATA_URL + '?' + new Date().getTime()).success(function(data) {
         //原型 data
         $scope.basicData.data = data;
 
@@ -191,14 +191,22 @@ app.directive('domDirective', ['$window', '$timeout', '$state', 'dataService', '
                 htmlFilesBox.className = 'html-files';
 
                 //判断上次更新时间是否超过8小时，是 则自动更新
-                dataService.getData(HTMLDATA_URL).success(function(data) {
+                dataService.getData(HTMLDATA_URL + '?' + new Date().getTime()).success(function(data) {
                     angular.forEach(data, function(value){
                         if(value.updateTime){
                             var now = new Date().getTime() / 1000;//时间戳 毫秒转秒
                             if((now - value.updateTime) >= 28800){//间隔超过28800秒(8小时)
+                                //删除按钮
+                                document.body.removeChild(htmlFilesBox);
+
                                 //更新all files数据
                                 dataService.getData(HTMLFILES_URL).success(function() {
+                                    $state.go($state.$current, null, { reload: true });
                                     console.log('自动更新数据成功！');
+
+                                    $timeout(function(){
+                                        document.body.appendChild(htmlFilesBox); //重新添加更新按钮
+                                    }, 3000);
                                 });
                             };
                         };
