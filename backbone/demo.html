@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="IE=edge">
+    <title>backbone demo</title>
+</head>
+<body>
+<button id="check">Check</button>
+<div id="demo"></div>
+<script type="text/javascript" src="lib/jquery.js"></script>
+<script type="text/javascript" src="lib/underscore.js"></script>
+<script type="text/javascript" src="lib/backbone.js"></script>
+<script type="text/javascript">
+(function ($) {
+    // Model
+    Model = Backbone.Model.extend({
+        name:null
+    });
+
+    // Collection
+    Collection = Backbone.Collection.extend({
+        initialize: function(models, options) {
+            this.bind('add', options.view.addAction);
+        }
+    });
+
+    // View
+    View = Backbone.View.extend({
+        el: $('body'),
+        initialize: function(){
+            //实例化Collection
+            this.action = new Collection(null, {view:this})
+        },
+        events: {
+            'click #check':'checkIn',
+        },
+        checkIn: function(){
+            var userName = prompt('your name?');
+            if(userName == '' || userName == null) userName = 'unknown';
+
+            //实例化Model
+            var sayHello = new Model({name:userName});
+            this.action.add(sayHello);
+        },
+        addAction: function(model) {
+            $('#demo').append('<p><b>' + model.get('name') + '</b> : Hello World！</p>');
+        }
+    });
+
+    //实例化View
+    var appview = new View;
+})(jQuery);
+</script>
+</body>
+</html>
