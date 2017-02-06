@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vue demo</title>
+</head>
+<body>
+<ul id="demo" v-if="seen">
+    <li v-for="todo in todos">
+        <span v-bind:title="message" v-on:click="reverseMessage">{{todo.text}}</span>
+        <input type="text" v-model="message">
+    </li>
+    <todo-item v-for="todo in todos" v-bind:todo="todo"></todo-item>
+</ul>
+<div id="app">
+    <app-nav></app-nav>
+    <app-view>
+        <app-sidebar></app-sidebar>
+        <app-content></app-content>
+    </app-view>
+</div>
+<script type="text/javascript" src="lib/vue.js"></script>
+<script type="text/javascript">
+Vue.component('todo-item',{
+    props:['todo'],
+    template:'<li>{{todo.text}}</li>'
+});
+
+var demo = new Vue({
+    el:'#demo',
+    data:{
+        message:'hello world!',
+        seen:true,
+        todos:[
+            {text:'abcd'},
+            {text:'bcda'},
+            {text:'cdab'}
+        ]
+    },
+    methods:{
+        reverseMessage(){
+            this.message = this.message.split('').reverse().join('');
+        }
+    }
+});
+demo.todos.push({text:'dabc'});
+
+Vue.component('app-nav', {
+    template:'<div class="nav">nav</div>'
+});
+Vue.component('app-view', {
+    template:'<div class="view"></div>'
+});
+Vue.component('app-sidebar', {
+    template:'<div class="sidebar">sidebar</div>'
+});
+Vue.component('app-content', {
+    template:'<div class="content">content</div>'
+});
+
+var app = new Vue({
+    el:'#app',
+    data:{}
+});
+</script>
+</body>
+</html>
