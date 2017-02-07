@@ -5,32 +5,52 @@
     <title>Vue demo</title>
 </head>
 <body>
-<ul id="demo" v-if="seen">
-    <li v-for="todo in todos">
-        <span v-bind:title="message" v-on:click="reverseMessage">{{todo.text}}</span>
-        <input type="text" v-model="message">
+<ul class="demo" v-if="seen">
+    <li>
+        <input v-model.trim="message" />
+        <span>{{message}}</span>
     </li>
-    <todo-item v-for="todo in todos" v-bind:todo="todo"></todo-item>
+    <li>
+        <input type="text" v-model="counter">
+        <button v-on:click.once="addAction(1, $event)">add 1</button>
+    </li>
+    <li>
+        <input type="checkbox" v-model="checked" v-bind:true-value="message">
+        <button v-on:keyup.enter="checkAction">{{checked}}</button>
+    </li>
+    <li>
+        <select v-model="selected">
+            <option v-for="(todo, index) in todos">{{todo.text}}</option>
+        </select>
+    </li>
+    <li v-for="(todo, index) in todos">
+        <span v-bind:title="message" v-on:click="reverseMessage(index)">{{todo.text}}</span>
+    </li>
+    <todo-item v-for="todo of todos" v-bind:todo="todo"></todo-item>
 </ul>
 <div id="app">
     <app-nav></app-nav>
-    <app-view>
+    <div is="app-view">
         <app-sidebar></app-sidebar>
         <app-content></app-content>
-    </app-view>
+    </div>
 </div>
 <script type="text/javascript" src="lib/vue.js"></script>
 <script type="text/javascript">
+// demo
 Vue.component('todo-item',{
     props:['todo'],
     template:'<li>{{todo.text}}</li>'
 });
 
 var demo = new Vue({
-    el:'#demo',
+    el:'.demo',
     data:{
         message:'hello world!',
         seen:true,
+        counter:0,
+        checked:false,
+        selected:'abcd',
         todos:[
             {text:'abcd'},
             {text:'bcda'},
@@ -38,13 +58,21 @@ var demo = new Vue({
         ]
     },
     methods:{
-        reverseMessage(){
-            this.message = this.message.split('').reverse().join('');
+        reverseMessage(index){
+            this.todos[index].text = this.todos[index].text.split('').reverse().join('');
+        },
+        addAction(key, event){
+            console.log(event);//访问原生事件对象
+            this.counter = this.counter + key;
+        },
+        checkAction(){
+            this.checked = !this.checked;
         }
     }
 });
 demo.todos.push({text:'dabc'});
 
+// app
 Vue.component('app-nav', {
     template:'<div class="nav">nav</div>'
 });
