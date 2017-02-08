@@ -30,8 +30,11 @@
 </ul>
 <div id="app">
     <app-nav></app-nav>
-    <app-sidebar></app-sidebar>
-    <app-content></app-content>
+    <app-view></app-view>
+
+    <button v-on:click="showView('app-sidebar')">show sidebar</button>
+    <button v-on:click="showView('app-content')">show content</button>
+    <component v-bind:is="currentView"></component>
 
     <p>{{total}}</p>
     <button-counter v-on:increment="incrementTotal"></button-counter>
@@ -78,8 +81,11 @@ demo.todos.push({text:'dabc'});
 Vue.component('app-nav', {
     template:'<div class="nav">nav</div>'
 });
+Vue.component('app-view', {
+    template:'<div class="view"><app-sidebar>sidebar1</app-sidebar><app-content>content1</app-content></div>'
+});
 Vue.component('app-sidebar', {
-    template:'<div class="sidebar">sidebar</div>'
+    template:'<div class="sidebar"><slot>sidebar</slot></div>'
 });
 Vue.component('app-content', {
     template:'<div class="content">content</div>'
@@ -102,17 +108,17 @@ Vue.component('button-counter', {
 var app = new Vue({
     el:'#app',
     data:{
-        total: 0
+        total: 0,
+        currentView:'app-sidebar'
     },
     methods:{
         incrementTotal(){
             this.total += 1;
+        },
+        showView(view){
+            this.currentView = view;
         }
     }
-});
-app.$emit('total', 1);
-app.$on('total', function(id){
-    console.log(id);
 });
 </script>
 </body>
