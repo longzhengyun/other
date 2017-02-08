@@ -16,7 +16,7 @@
     </li>
     <li>
         <input type="checkbox" v-model="checked" v-bind:true-value="message">
-        <button v-on:keyup.enter="checkAction">{{checked}}</button>
+        <button v-on:keyup.enter="checkAction()">{{checked}}</button>
     </li>
     <li>
         <select v-model="selected">
@@ -30,10 +30,12 @@
 </ul>
 <div id="app">
     <app-nav></app-nav>
-    <div is="app-view">
-        <app-sidebar></app-sidebar>
-        <app-content></app-content>
-    </div>
+    <app-sidebar></app-sidebar>
+    <app-content></app-content>
+
+    <p>{{total}}</p>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
+    <button-counter v-on:increment="incrementTotal"></button-counter>
 </div>
 <script type="text/javascript" src="lib/vue.js"></script>
 <script type="text/javascript">
@@ -76,19 +78,41 @@ demo.todos.push({text:'dabc'});
 Vue.component('app-nav', {
     template:'<div class="nav">nav</div>'
 });
-Vue.component('app-view', {
-    template:'<div class="view"></div>'
-});
 Vue.component('app-sidebar', {
     template:'<div class="sidebar">sidebar</div>'
 });
 Vue.component('app-content', {
     template:'<div class="content">content</div>'
 });
+Vue.component('button-counter', {
+    template:'<button v-on:click="increment">{{counter}}</button>',
+    data:function(){
+        return {
+            counter:0
+        }
+    },
+    methods:{
+        increment(){
+            this.counter += 1;
+            this.$emit('increment');
+        }
+    }
+});
 
 var app = new Vue({
     el:'#app',
-    data:{}
+    data:{
+        total: 0
+    },
+    methods:{
+        incrementTotal(){
+            this.total += 1;
+        }
+    }
+});
+app.$emit('total', 1);
+app.$on('total', function(id){
+    console.log(id);
 });
 </script>
 </body>
