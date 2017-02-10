@@ -27,6 +27,7 @@
         <span v-bind:title="message" v-on:click="reverseMessage(index)">{{todo.text}}</span>
     </li>
     <todo-item v-for="todo of todos" v-bind:todo="todo"></todo-item>
+    <anchored-heading :level='5'>{{message}}</anchored-heading>
 </ul>
 <div id="app">
     <app-nav></app-nav>
@@ -47,7 +48,20 @@ Vue.component('todo-item',{
     props:['todo'],
     template:'<li>{{todo.text}}</li>'
 });
-
+Vue.component('anchored-heading', {
+    render:function(createElement){
+        return createElement(
+            'h' + this.level,
+            this.$slots.default
+        );
+    },
+    props:{
+        level:{
+            type:Number,
+            required:true
+        }
+    }
+});
 var demo = new Vue({
     el:'.demo',
     data:{
@@ -104,7 +118,6 @@ Vue.component('button-counter', {
         }
     }
 });
-
 var app = new Vue({
     el:'#app',
     data:{
