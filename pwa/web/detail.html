@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <title>demo</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<div class="section">
+    <table class="table detail-table" id="table">
+        <tbody></tbody>
+    </table>
+</div>
+<script src="/js/axios.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+    // 获取url上参数
+    function getQueryString(name) { 
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i'); 
+        var r = window.location.search.substr(1).match(reg); 
+        if (r != null) return unescape(r[2]); 
+        return null; 
+    };
+
+    window.onload = function () {
+        var id = getQueryString('id');
+        if (id) {
+            demoScript.getUserDetail(id); // 获取用户详情数据
+        }
+    };
+</script>
+</body>
+</html>

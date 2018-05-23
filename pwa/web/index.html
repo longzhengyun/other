@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size:50px;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>demo</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+<div class="section">
+    <table class="table list-table" id="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Icon</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Join Time</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<script src="/js/axios.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+    // 注册serviceWorker
+    if ('serviceWorker' in navigator) {
+        var swVersion = '0.0.1';
+        navigator.serviceWorker.register('serviceWorker.js').then(function (registration) {
+            if (localStorage.getItem('swVersion') !== swVersion) { // 解决因为服务器缓存serviceWorker.js导致的serviceWorker不更新问题
+                registration.update().then(function () {
+                    localStorage.setItem('swVersion', swVersion)
+                })
+            };
+            console.log('ServiceWorker registration successful with scope: ', registration.scope); // 注册成功
+        }).catch(function (err) {
+            console.log('ServiceWorker registration failed: ', err); // 注册失败
+        });
+    };
+
+    // 加载数据
+    window.onload = function () {
+        var number = 20; // 显示条数
+        demoScript.getUserList(number); // 获取用户列表数据
+    };
+</script>
+</body>
+</html>

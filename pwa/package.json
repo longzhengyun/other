@@ -1,0 +1,17 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "node.js project",
+  "author": "jli <jli@amxc.tech>",
+  "private": true,
+  "scripts": {
+    "dev": "node server/index.js",
+    "start": "PORT=4321 NODE_ENV=production node server/index.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.3",
+    "mysql": "^2.15.0"
+  },
+  "devDependencies": {}
+}
