@@ -1,0 +1,26 @@
+<div class="section">
+    <table class="table list-table" id="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Icon</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Join Time</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(var i in data){ %>
+                <tr>
+                    <td><%= data[i].id %></td>
+                    <td><img src="<%= data[i].picUrl %>" /></td>
+                    <td><%= data[i].name %></td>
+                    <td><%= data[i].phone %></td>
+                    <td><%= data[i].addTime %></td>
+                    <td><a href="detail/<%= data[i].id %>">详情</a></td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
