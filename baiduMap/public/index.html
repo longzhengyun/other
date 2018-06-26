@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html style="font-size:50px;">
+  <head>
+    <script>(function(f,e){var g=f.documentElement,c="orientationchange" in window?"orientationchange":"resize",b=function(){var h=g.clientWidth;if(!h){return}g.style.fontSize=100*(h/750)+"px"};if(!f.addEventListener){return}e.addEventListener(c,b,false);f.addEventListener("DOMContentLoaded",b,false);var d=document.getElementsByTagName("html")[0];var a="";if(e.devicePixelRatio<1.5){a="data-s"}if(e.devicePixelRatio>=1.5&&e.devicePixelRatio<2){a="data-m"}if(e.devicePixelRatio>=2){a="data-l"}d.setAttribute("data-dpr",a)})(document,window);</script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="email=no, telephone=no">
+    <meta name="renderer" content="webkit">
+    <meta name="full-screen" content="yes">
+    <meta name="x5-fullscreen" content="true">
+    <meta name="x5-page-mode" content="app">
+    <meta name="browsermode" content="application">
+    <meta name="description" content="自如客住上海吃趴浪">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="stylesheet" href="<%= BASE_URL %>css/main.css">
+    <link rel="stylesheet" href="<%= BASE_URL %>css/share.min.css">
+    <script src="https://api.map.baidu.com/api?v=3.0&ak=CB9b776692623d30a148b5c5dc2b75a6"></script>
+    <!-- <script src="https://api.map.baidu.com/api?v=3.0&ak=KXgQud8r7H2m79FOgg3ehwhb"></script> -->
+    <script src="https://api.map.baidu.com/library/EventWrapper/1.2/src/EventWrapper.js"></script>
+    <script src="<%= BASE_URL %>js/jquery.min.js"></script>
+    <script src="<%= BASE_URL %>js/jquery.share.min.js"></script>
+    <title>自如客住上海</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
