@@ -4,40 +4,31 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const state = {
-  data: [],
-  headerConfig: {
-    showHeader: false,
-    showBack: true,
-    title: '自如客住上海',
-    showShare: true
-  },
-  shareShow: false,
+  data: null,
   selectShow: false,
+  selectOptionIndex: 0,
+  selectValueIndex: 0,
   selectPoint: {
-    x: '121.481584',
-    y: '31.234816'
-  },
-  selectIndex: 0
+    x: '121.446761',
+    y: '31.247562'
+  }
 }
 
 const mutations = {
   data (state, data) {
     state.data = data
   },
-  setHeaderConfig(state, data) {
-    Object.assign(state.headerConfig, data)
-  },
-  shareShow (state, data) {
-    state.shareShow = data
-  },
   selectShow (state, data) {
     state.selectShow = data
   },
-  selectPoint(state, data) {
-    state.selectPoint = data
+  selectOptionIndex (state, data) {
+    state.selectOptionIndex = data
   },
-  selectIndex(state, data) {
-    state.selectIndex = data
+  selectValueIndex (state, data) {
+    state.selectValueIndex = data
+  },
+  selectPoint (state, data) {
+    state.selectPoint = data
   }
 }
 

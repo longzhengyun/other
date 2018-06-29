@@ -4,245 +4,292 @@
 
 <script>
   export default {
-    name: 'Map',
+    name: 'MapComponent',
     props: ['data'],
+    data () {
+      return {
+        newData: [],
+        currentZoom: 11,
+        map: null
+      }
+    },
     computed: {
       selectPoint () {
         return this.$store.state.selectPoint
       }
     },
-    watch: {
-      data: function (val) {
-        if (val.length) {
-          this.initMap(val) // 初始化地图
-        }
-      }
-    },
     mounted () {
-      if (this.data.length) {
-        this.initMap(this.data) // 初始化地图
-      }
+      this.initMap(this.data) // 初始化地图
     },
     methods: {
       initMap (data) {
         // 初始化地图
-        let map = new window.BMap.Map('map', { minZoom: 14, maxZoom: 15 })
-        map.centerAndZoom(new window.BMap.Point(this.selectPoint.x, this.selectPoint.y), 15) // 初始化地图，设置中心点坐标和地图级别。
-        map.disableDoubleClickZoom(true)
-        map.setCurrentCity('上海')
-        map.setMapStyle({
-          styleJson: [
-            {
-              "featureType": "manmade",
-              "elementType": "all",
-              "stylers": {
-                "visibility": "off"
-              }
-            },
-            {
-              "featureType": "poilabel",
-              "elementType": "all",
-              "stylers": {
-                "visibility": "off"
-              }
+        this.map = new window.BMap.Map('map',{ minZoom: 11, maxZoom: 14 })
+        this.map.centerAndZoom(new window.BMap.Point(this.selectPoint.x, this.selectPoint.y), 11) // 初始化地图，设置中心点坐标和地图级别。
+        this.map.disableDoubleClickZoom(true)
+        this.map.setCurrentCity('上海')
+        this.map.setMapStyle({
+          styleJson: [{
+            "featureType": "manmade",
+            "elementType": "all",
+            "stylers": {
+              "visibility": "off"
             }
-          ]
+          },
+          {
+            "featureType": "poilabel",
+            "elementType": "all",
+            "stylers": {
+              "visibility": "off"
+            }
+          },
+          {
+            "featureType": "land",
+            "elementType": "all",
+            "stylers": {
+              "color": "#000000ff"
+            }
+          },
+          {
+            "featureType": "water",
+            "elementType": "all",
+            "stylers": {
+              "color": "#444444ff"
+            }
+          },
+          {
+            "featureType": "green",
+            "elementType": "all",
+            "stylers": {
+              "color": "#000000ff",
+              "visibility": "off"
+            }
+          },
+          {
+            "featureType": "building",
+            "elementType": "all",
+            "stylers": {
+              "color": "#444444ff"
+            }
+          },
+          {
+            "featureType": "road",
+            "elementType": "all",
+            "stylers": {
+              "color": "#444444ff",
+              "lightness": -43
+            }
+          },
+          {
+            "featureType": "subway",
+            "elementType": "labels.icon",
+            "stylers": {
+              "visibility": "off"
+            }
+          },
+          {
+            "featureType": "highway",
+            "elementType": "labels",
+            "stylers": {
+              "visibility": "off"
+            }
+          },
+          {
+            "featureType": "district",
+            "elementType": "labels",
+            "stylers": {
+              "visibility": "off"
+            }
+          },
+          {
+            "featureType": "city",
+            "elementType": "labels",
+            "stylers": {
+              "visibility": "off"
+            }
+          },
+          {
+            "featureType": "town",
+            "elementType": "labels",
+            "stylers": {
+              "color": "#ffffffff",
+              "visibility": "off"
+            }
+          },
+          {
+            "featureType": "arterial",
+            "elementType": "all",
+            "stylers": {
+              "visibility": "off"
+            }
+          },
+          {
+            "featureType": "road",
+            "elementType": "labels",
+            "stylers": {
+              "visibility": "off"
+            }
+          }
+        ]
         })
 
-        // 画商圈
-        this.createCircle(map, data)
-
-        // 改变缩放等级时重画商圈
-        map.addEventListener('zoomend', () => {  
-          let centerPoint = map.getCenter()
-          let point = {
-            x: centerPoint.lng.toString(),
-            y: centerPoint.lat.toString()
+        let myGeo = new window.BMap.Geocoder()
+        data.map((m) => {
+          let isPass = true
+          let obj = {}
+          this.newData.map((n) => {
+            if (n.area === m.area) {
+              isPass = false
+            }
+          })
+          if (isPass) {
+            obj = {
+              id: m.id,
+              area: m.area,
+              point: m.point,
+              data: []
+            }
+            this.newData.push(obj)
           }
-          this.$store.commit('selectPoint', point)
-          
-          // 重画商圈
-          this.createCircle(map, data)
+        })
+        
+        this.newData.map((n, key) => {
+          data.map((m) => {
+            if (n.area === m.area) {
+              n.data.push(m)
+            }
+          })
+          myGeo.getPoint(n.area, (point) => {
+            if (point) {
+              n.point = {
+                x: point.lng,
+                y: point.lat
+              }
+            }
+            if (key === (this.newData.length - 1)) {
+              this.createCircle(this.map, this.newData)
+            }
+          }, '上海市')
+        })
+
+        // 地图点击事件
+        this.map.addEventListener('click', (e) => {
+          if (e.overlay && e.overlay.id) {
+            let id = e.overlay.id
+            let point = {
+              x: e.overlay.point.lng,
+              y: e.overlay.point.lat
+            }
+            this.$store.commit('selectPoint', point)
+            if (this.currentZoom === 11) {
+              this.currentZoom = 14
+              this.map.centerAndZoom(new window.BMap.Point(point.x, point.y), this.currentZoom)
+              let targetData
+              this.newData.map((value) => {
+                if (value.id === id) {
+                  targetData = value.data
+                }
+              })
+              // 重画商圈
+              this.createCircle(this.map, targetData)
+            } else {
+              this.goTarget(id) 
+            }
+          }
+        })
+
+        let zoomEnd
+        // 改变缩放等级时重画商圈
+        this.map.addEventListener('zoomend', () => {
+          let zoomEnd = this.map.getZoom()
+          if (zoomEnd === 12 || zoomEnd === 13) {
+            if (zoomEnd > this.currentZoom) {
+              this.currentZoom = 14
+            } else if (zoomEnd < this.currentZoom) {
+              this.currentZoom = 11
+            }
+            this.map.centerAndZoom(new window.BMap.Point(this.selectPoint.x, this.selectPoint.y), this.currentZoom)
+            // 重画商圈
+            if (this.currentZoom === 14) {
+              this.beforeCreateCircle(this.map, data)
+            } else if (this.currentZoom === 11) {
+              this.createCircle(this.map, this.newData)
+            }
+          }
         })
 
         // 拖拽地图时重画商圈
-        map.addEventListener('dragend', () => {  
-          let centerPoint = map.getCenter()
-          let point = {
-            x: centerPoint.lng.toString(),
-            y: centerPoint.lat.toString()
-          }
-          this.$store.commit('selectPoint', point)
-          
+        this.map.addEventListener('dragend', () => {
           // 重画商圈
-          this.createCircle(map, data)
+          this.beforeCreateCircle(this.map, data)
         })
       },
-      createCircle (map, data) {
-        map.clearOverlays() // 清除覆盖物
-
+      beforeCreateCircle (map, data) {
         let bounds = map.getBounds() //获取可视区域
         let leftBottomPoint = bounds.getSouthWest() //可视区域左下角
         let rightTopPoint = bounds.getNorthEast() //可视区域右上角
 
-        // 自定义覆盖物
-        function ComplexCustomOverlay (point, text, id, key) {
-          this._point = point
-          this._text = text
-          this._id = id
-          this._key = key
-        }
-        ComplexCustomOverlay.prototype = new window.BMap.Overlay()
-        ComplexCustomOverlay.prototype.initialize = function (map) {
-          this._map = map
-
-          let scaleValue
-          if (this._key === 0) {
-            scaleValue = 1.2
-          } else if (this._key === 1) {
-            scaleValue = 1
-          } else if (this._key === 2 || this._key === 3) {
-            scaleValue = 0.9
-          } else if (this._key === 4 || this._key === 5) {
-            scaleValue = 0.8
-          } else if (this._key === 6 || this._key === 7 || this._key === 8) {
-            scaleValue = 0.7
-          } else if (this._key === 9 || this._key === 10 || this._key === 11) {
-            scaleValue = 0.6
-          } else if (this._key === 12 || this._key === 13 || this._key === 14) {
-            scaleValue = 0.5
-          } else if (this._key === 15 || this._key === 16 || this._key === 17) {
-            scaleValue = 0.4
-          } else {
-            scaleValue = 0.3
-          }
-
-          let div = this._div = document.createElement('div')
-          div.id = this._id
-          div.setAttribute('data-pointx', this._point.lng)
-          div.setAttribute('data-pointy', this._point.lat) 
-          div.style.position = 'absolute'
-          div.style.zIndex = window.BMap.Overlay.getZIndex(this._point.lat)
-          div.style.backgroundColor = 'rgba(236, 151, 3, .5)'
-          div.style.width = '64px'
-          div.style.height = '64px'
-          div.style.borderRadius = '100%'
-          div.style.MozUserSelect = 'none'
-          div.style.transform = 'scale(' + scaleValue + ')'
-
-          let div2 = document.createElement('div')
-          div2.id = this._id
-          div2.setAttribute('data-pointx', this._point.lng)
-          div2.setAttribute('data-pointy', this._point.lat) 
-          div2.style.position = 'absolute'
-          div2.style.top = '50%'
-          div2.style.left = '50%'
-          div2.style.margin = '-24px 0 0 -24px'
-          div2.style.backgroundColor = 'rgba(255, 246, 4, .5)'
-          div2.style.width = '48px'
-          div2.style.height = '48px'
-          div2.style.borderRadius = '100%'
-
-          let div3 = document.createElement('div')
-          div3.setAttribute('data-pointx', this._point.lng)
-          div3.setAttribute('data-pointy', this._point.lat) 
-          div3.id = this._id
-          div3.style.position = 'absolute'
-          div3.style.top = '50%'
-          div3.style.left = '50%'
-          div3.style.margin = '-16px 0 0 -16px'
-          div3.style.backgroundColor = 'rgba(255, 255, 255, 1)'
-          div3.style.width = '32px'
-          div3.style.height = '32px'
-          div3.style.borderRadius = '100%'
-
-          let span = document.createElement('span')
-          span.id = this._id
-          span.setAttribute('data-pointx', this._point.lng)
-          span.setAttribute('data-pointy', this._point.lat) 
-          span.style.position = 'absolute'
-          span.style.top = '70px'
-          span.style.left = '50%'
-          span.style.width = '140px'
-          span.style.marginLeft = '-70px'
-          span.style.paddingLeft = '6px'
-          span.style.fontWeight = 'bold'
-          span.style.fontFamily = 'simsun'
-          span.style.textAlign = 'center'
-          span.style.color = '#fff'
-          span.style.fontSize = '12px'
-          span.style.whiteSpace = 'nowrap'
-          span.innerHTML = this._text + ' &gt;'
-
-          div.appendChild(div2)
-          div.appendChild(div3)
-          div.appendChild(span)
-
-          map.getPanes().labelPane.appendChild(div)
-
-          return div
-        }
-        ComplexCustomOverlay.prototype.draw = function () {
-          let map = this._map
-          let pixel = map.pointToOverlayPixel(this._point)
-          this._div.style.left = pixel.x - 32 + 'px'
-          this._div.style.top = pixel.y - 32 + 'px'
-        }
-
         let currentPoint = []
 
-        data.map((value) => {
-          if (value.point.x >= leftBottomPoint.lng 
-          && value.point.x <= rightTopPoint.lng 
-          && value.point.y >= leftBottomPoint.lat 
-          && value.point.y <= rightTopPoint.lat) {
-            currentPoint.push(value)
-          }
-        })
-
-        const sortData = (data) => { // 数据排序
-          return data.sort((a, b) => {
-            let centerPointValue = Math.sqrt(this.selectPoint.x * this.selectPoint.x + this.selectPoint.y * this.selectPoint.y)
-            let aValue = Math.sqrt(a.point.x * a.point.x + a.point.y * a.point.y)
-            let bValue = Math.sqrt(b.point.x * b.point.x + b.point.y * b.point.y)
-            return Math.abs(aValue - centerPointValue) - Math.abs(bValue - centerPointValue)
-          })
-        }
-
-        currentPoint = sortData(currentPoint)
-
-        currentPoint.map((value, key) => {
-          let point = new window.BMap.Point(value.point.x, value.point.y)
-          let myCompOverlay = new ComplexCustomOverlay(point, value.tradeArea, value.id, key)
-          map.addOverlay(myCompOverlay)
-
-          window.BMapLib.EventWrapper.clearListeners(myCompOverlay._div, 'touchend')
-          window.BMapLib.EventWrapper.addDomListener(myCompOverlay._div, 'touchend', (e) => {
-            e.stopPropagation()
-            if (e.target && e.target.id) {
-              let id = e.target.id
-              let point = {
-                x: e.target.dataset.pointx,
-                y: e.target.dataset.pointy
-              }
-              this.goTarget(id, point)
+        if(this.currentZoom === 14) {
+          data.map((value) => {
+            if (value.point.x >= leftBottomPoint.lng 
+            && value.point.x <= rightTopPoint.lng 
+            && value.point.y >= leftBottomPoint.lat 
+            && value.point.y <= rightTopPoint.lat) {
+              currentPoint.push(value)
             }
           })
+          this.createCircle(map, currentPoint)
+        } else if (this.currentZoom === 11) {
+          this.createCircle(map, this.newData)
+        }
+      },
+      createCircle (map, data) {
+        map.clearOverlays() // 清除覆盖物
+        data.map((value) => {
+          let point = new window.BMap.Point(value.point.x, value.point.y)
+
+          let icon = new window.BMap.Icon('/img/icon_circle.png', new window.BMap.Size(45, 45))
+          let marker = new window.BMap.Marker(point, { icon })
+          marker.id = value.id
+          map.addOverlay(marker)
+
+          let opts = {
+            position: point,
+            offset: new window.BMap.Size(-45, 45)
+          }
+          let labelName
+          if (this.currentZoom === 11) {
+            labelName = value.area
+          } else {
+            labelName = value.tradeArea
+          }
+          let label = new window.BMap.Label(labelName, opts)
+          label.setStyle({
+            color : '#fff',
+            fontSize : '12px',
+            width: '135px',
+            padding: '0',
+            lineHeight : '20px',
+            textAlign: 'center',
+            backgroundColor: 'transparent',
+            borderWidth: '0'
+          })
+          marker.setLabel(label)
         })
       },
-      goTarget (id, point) {
-        let centerPoint = {
-          x: point.x,
-          y: point.y
-        }
-        this.$emit('goTarget', id, centerPoint)
+      goTarget (id) {
+        this.$emit('goTarget', id)
       }
+    },
+    beforeDestroy () {
+      this.map = null
     }
   }
 </script>
 
 <style scoped>
   .map{height:100%;background-color:transparent !important;}
-  .map >>> img{filter:grayscale(1) invert(1) brightness(.5);}
   .map >>> .anchorBL{display:none;}
 </style>

@@ -1,67 +1,34 @@
 <template>
   <div id="app">
-    <header-component :config="curHeaderConfig"></header-component>
-    <transition name="fade" mode="out-in">
-      <router-view></router-view>
-    </transition>
-    <share-component :config="curShareConfig"></share-component>
+    <div class="data-mask" v-if="dataMask">
+      <div class="toast">
+        <span class="icon"><img class="img" src="/img/loading.png" /></span>
+        <span class="text">数据加载中</span>
+      </div>
+    </div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-  import allData from './../public/data.json';
-  import HeaderComponent from './components/Header';
-  import ShareComponent from './components/Share';
+  import axios from 'axios'
   export default {
     name: 'app',
     data () {
       return {
-        curHeaderConfig: {},
-        curShareConfig: {
-          url: 'http://sh.m.ziroom.com/', // 网址，默认使用 window.location.href
-          source: 'http://sh.m.ziroom.com/', // 来源（QQ空间会用到）, 默认读取head标签：<meta name="site" content="http://overtrue" />
-          title: '自如客住上海吃趴浪', // 标题，默认读取 document.title 或者 <meta name="title" content="share.js" />
-          description: '品质房源、线上订房、非中介！高品质租房品牌“自如”让您享受高品质生活。自如承诺：3天不满意全额退款！自如网区域找房提供准确的上海租房信息和上海租房价格。', // 描述, 默认读取head标签：<meta name="description" content="PHP弱类型的实现原理分析" />
-          image: '', // 图片, 默认取网页中第一个img标签
-          sites: ['weibo', 'qq', 'qzone','douban', 'linkedin'], // 启用的站点
-          disabled: ['google', 'facebook', 'twitter'] // 禁用的站点
-          // wechatQrcodeTitle: "微信扫一扫：分享", // 微信二维码提示文字
-          // wechatQrcodeHelper: '<p>微信里点“发现”，扫一下</p><p>二维码便可将本文分享至朋友圈。</p>',
-        }
-      }
-    },
-    computed: {
-      headerConfig () {
-        return this.$store.state.headerConfig
-      }
-    },
-    watch: {
-      // 如果路由有变化，会再次执行该方法
-      '$route': function (val) {
-        this.setConfig(val)
+        dataMask: true
       }
     },
     created () {
-      this.initData(allData) // 初始化地图
-      this.setConfig(this.$route) // 设置header 配置信息
+      this.getData() // 获取数据
     },
     methods: {
-      setConfig (value) {
-        let path = value.path
-        let config = {}
-
-        if (this.checkSystem() === 'wx') {
-          config.showHeader = false
-        } else {
-          config.showHeader = true
-        }
-
-        // index
-        if (path === '/index') {
-            config.showBack = false
-        }
-
-        this.curHeaderConfig = Object.assign({}, this.headerConfig, config) // 将新值和默认值合并到空对象中 解决直接修改子属性组件不更新问题
+      getData () {
+        axios.get('/data.json').then((res) => {
+          this.initData(res.data) // 初始化数据
+        }).catch((error) => {
+          console.log(error)
+        })
       },
       initData (data) {
         let newData = []
@@ -132,6 +99,7 @@
           newData.push(obj)
         })
         this.$store.commit('data', newData)
+        this.dataMask = false
       },
       getObj (name, value) {
         return {
@@ -140,33 +108,35 @@
           evaluate: value[name + ':business:evaluate'],
           logo: value[name + ':business:logo'],
         }
-      },
-      checkSystem () {
-        let u = window.navigator.userAgent
-        let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1
-        let isIos = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
-        let isWx = false
-        if (u.match(/MicroMessenger/i)) {
-          isWx = u.match(/MicroMessenger/i).toString() === 'MicroMessenger'
-        }
-        if (isWx) {
-          return 'wx'
-        } else {
-          if (isAndroid) {
-            return 'andriod'
-          } else if (isIos) {
-            return 'iOS'
-          }
-        }
       }
-    },
-    components: {
-      HeaderComponent,
-      ShareComponent
     }
   }
 </script>
 
 <style>
   #app{height:100%;}
+  
+  .data-mask{position:absolute;top:0;right:0;bottom:0;left:0;z-index:999;background-color:rgba(0, 0, 0, .8);}
+  .data-mask .toast{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);}
+  .data-mask .toast .img{display:block;margin:0 auto .2rem auto;width:.72rem;height:.72rem;animation:rotateImg linear infinite 1.5s;}
+  .data-mask .toast .text{font-size:.28rem;color:#666;}
+
+  @keyframes changeArrow{
+    0%{background-image:url(/img/bg3_arrow1.png)}
+    50%{background-image:url(/img/bg3_arrow2.png)}
+    100%{background-image:url(/img/bg3_arrow3.png)}
+  }
+
+  @keyframes rotateImg{
+    0%{transform:rotate(0)}
+    100%{transform:rotate(360deg)}
+  }
+
+  @keyframes moveText{
+    0%{left:0}
+    25%{left:.05rem}
+    50%{left:0}
+    75%{left:-.05rem}
+    100%{left:0}
+  }
 </style>
