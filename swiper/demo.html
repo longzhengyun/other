@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no,email=no,address=no" />
+    <meta name=”apple-mobile-web-app-capable” content=”yes” />
+    <meta name="full-screen" content="yes" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/css/swiper.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        html,
+        body {
+            height: 100%;
+        }
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+        }
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="swiper-container" id="swiper-outer">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">page1</div>
+            <div class="swiper-slide">
+                <div class="swiper-container" id="swiper-inner2">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">page2-1</div>
+                        <div class="swiper-slide">
+                            <div style="width:100%;height:2000px;background-color:#eee;">page2-2
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>page2-2
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>page2-2
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>page2-2
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>page2-2
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>page2-2
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="swiper-container" id="swiper-inner3">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">page3-1</div>
+                        <div class="swiper-slide">page3-2</div>
+                        <div class="swiper-slide">page3-3</div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div style="width:100%;height:2000px;background-color:#eee;">page4
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>page4
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>page4
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>page4
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>page4
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>page4
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    <div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/js/swiper.min.js"></script>
+    <script>
+        // 当内容超过一屏，滑动时阻止默认切换，滚动内容
+        function scrollContent (thisSwiper) {
+            var startScroll, touchStart, touchCurrent;
+            thisSwiper.slides.on('touchstart', function (e) {
+                startScroll = this.scrollTop; // 当前滚动值
+                touchStart = e.targetTouches[0].pageY;
+            }, true);
+            thisSwiper.slides.on('touchmove', function (e) {
+                touchCurrent = e.targetTouches[0].pageY;
+                var touchesDiff = touchCurrent - touchStart; // touchesDiff > 0 下滑，页面往上滚动； touchesDiff < 0 上滑，页面往下滚动
+                var onlyScrolling = (this.scrollHeight > this.offsetHeight) && ( // 首先内容必须超出容器
+                    (touchesDiff < 0 && startScroll === 0) || // 上滑且当前页面滚动值为0
+                    (touchesDiff > 0 && startScroll === (this.scrollHeight - this.offsetHeight)) || // 下滑且当前页面滚动值为内容超出高度
+                    (startScroll > 0 && startScroll < (this.scrollHeight - this.offsetHeight)) // 当前页面滚动值不为0且滚动值小于内容超出高度
+                );
+                if (onlyScrolling) {
+                    e.stopPropagation(); // 阻止默认行为
+                }
+            }, true);
+        };
+
+        // 内部切换结束，通知外部切换
+        function changeSlide (outerSwiper, curSwiper, perv, next) { // 父级swiper对象，当前swiper，父级下滑目标index，父级上滑目标index
+            if (curSwiper.swipeDirection === 'prev' && curSwiper.activeIndex === 0) {
+                outerSwiper.slideTo(perv)
+            }
+            if (curSwiper.swipeDirection === 'next' && curSwiper.activeIndex === (curSwiper.slides.length - 1)) {
+                outerSwiper.slideTo(next)
+            }
+        };
+
+        // 执行方法
+        window.onload = function () {
+            // 初始化
+            var swiperOuter = new Swiper('#swiper-outer', {
+                direction : 'vertical'
+            });
+            scrollContent(swiperOuter);
+
+            var swiperInner2 = new Swiper('#swiper-inner2', {
+                direction: 'vertical',
+                on: {
+                    touchEnd: function (event) {
+                        changeSlide(swiperOuter, swiperInner2, 0, 2);
+                    }
+                }
+            });
+            scrollContent(swiperInner2);
+
+            var swiperInner3 = new Swiper('#swiper-inner3', {
+            });
+        }
+    </script>
+</body>
+</html>
