@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 实例化
 const instance = axios.create({
-    baseURL: '',
+    baseURL: '/api',
     withCredentials: true, // 是否允许带cookie
     timeout: 20000,
 });
@@ -24,7 +24,13 @@ instance.interceptors.response.use((response) => {
     return Promise.reject(error);
 });
 
-const axiosPost = (url: string, params: object) => {
+interface Response {
+    code: number
+    message: string
+    data: any
+}
+
+const axiosPost = (url: string, params?: object): Promise<Response> => {
     return new Promise((resolve, reject) => {
         instance.post(url, params).then((res) => {
             resolve(res)
@@ -34,7 +40,7 @@ const axiosPost = (url: string, params: object) => {
     })
 };
 
-const axiosGet = (url: string, params: object) => {
+const axiosGet = (url: string, params?: object): Promise<Response> => {
     return new Promise((resolve, reject) => {
         instance.get(url, { params }).then((res) => {
             resolve(res)

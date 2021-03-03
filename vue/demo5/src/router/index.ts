@@ -1,11 +1,14 @@
-import { createRouter, createMemoryHistory } from 'vue-router'
+import { RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
 
-const routes = [
-    { 'path': '/', name: 'home', component: () => import('./../components/Home.vue') },
-    { 'path': '/detail/:id', name: 'detail', component: () => import('./../components/Detail.vue') },
+const HomePage = () => import('./../pages/Home.vue')
+const DetailPage = () => import('./../pages/Detail.vue')
+
+const routes: RouteRecordRaw[] = [
+    { path: '/', name: 'Home', component: HomePage },
+    { path: '/detail/:id', name: 'Detail', component: DetailPage },
 ]
 
 export default createRouter({
-    history: createMemoryHistory(),
-    routes: routes,
+    history: createWebHistory('/'),
+    routes,
 })
