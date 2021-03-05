@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from 'vue'
 
 export default defineComponent({
     name: 'CardBox',
@@ -22,5 +22,5 @@ export default defineComponent({
     .model-wrap{position: fixed;top:0;left:0;right:0;}
     .model-title{position: absolute;top:0;left:50%;transform: translateX(-50%);font-size: 5vw;font-weight: bold;opacity: .1;}
     .model-list{display: flex;justify-content: center;}
-    .model-item{width:1vw;font-size: 1vw;text-align: center;line-height: 1;padding: 2vw .2vw;font-weight: bold;writing-mode:vertical-rl;}
+    .model-item{width:1vw;font-size: 1vw;line-height: 1;padding: 2vw .2vw;font-weight: bold;writing-mode:vertical-rl;}
 </style>
