@@ -1,7 +1,7 @@
 <template>
     <div class="model-wrap">
-        <div class="player-card">
-            <card :data="data" />
+        <div class="model-card">
+            <card :data="data" :show="show" :open="true" />
         </div>
     </div>
 </template>
@@ -12,7 +12,7 @@ import { defineComponent } from 'vue'
 import Card from './Card.vue'
 
 export default defineComponent({
-    name: 'CardBox',
+    name: 'BossCard',
     components: {
         Card
     },
@@ -21,11 +21,15 @@ export default defineComponent({
             type: Array,
             default: [],
         },
-    },
+        show: {
+            type: Boolean,
+            default: false,
+        },
+    }
 })
 </script>
 
 <style scoped>
-    .model-wrap{position: absolute;top:0;left:0;right:0;}
-    .player-card{position: absolute;left:50%;top:1vw; width:6.3vw;height:8.8vw;overflow:visible;transform:translateX(-50%);}
+    .model-wrap{position: fixed;top:10vw;left:50%;transform: translateX(-50%);}
+    .model-card{width:6.3vw;height:8.8vw;overflow:visible;}
 </style>

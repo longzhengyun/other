@@ -1,8 +1,8 @@
 <template>
-    <div @click="btnAction" class="model-btn">
-        <span v-if="data === 1">洗牌</span>
-        <span v-if="data === 2">发牌</span>
-        <span v-if="data === 3">抢地主</span>
+    <div @click="$emit('doAction', data)" class="model-btn">
+        <div v-if="data === 1" class="item">洗牌</div>
+        <div v-if="data === 2" class="item">发牌</div>
+        <div v-if="data === 3" class="item">抢地主</div>
     </div>
 </template>
 
@@ -12,21 +12,16 @@ import { defineComponent } from 'vue'
 export default defineComponent({
     name: 'PlayBtn',
     props: {
-        data: Number
+        data: {
+            type: Number,
+            default: 0,
+        },
     },
-    setup(props, { emit }) {
-        // 出牌
-        const btnAction = () => {
-            emit('doAction', props.data)
-        }
-
-        return {
-            btnAction,
-        }
-    }
+    emits: ['doAction'],
 })
 </script>
 
 <style scoped>
-    .model-btn{position: fixed;top:50%;left:50%;transform: translate(-50%, -50%);z-index:500;cursor: pointer;font-size: 4vw;}
+    .model-btn{position: absolute;top: 50%; left: 50%;transform: translate(-50%, -50%);}
+    .model-btn .item{border-radius: 6px;font-size:28px;background-color:#ffc107;color:#fff;border:2px solid #fff;padding:5px 20px;cursor: pointer;}
 </style>

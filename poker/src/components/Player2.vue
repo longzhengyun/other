@@ -1,40 +1,67 @@
 <template>
     <div class="model-wrap">
-        <h3 class="model-title">Player 2</h3>
-        <ul class="model-list">
-            <li v-for="(item, key) in data" :key="key" @click="gameState && doPlay(item)" class="model-item">{{ item.name }}</li>
-        </ul>
-        <div v-if="gameState" @click="doPlay(null)" class="model-btn">要不起</div>
+        <div class="player-card">
+            <card :data="data" :show="true" :select="true" :selectCards="selectCards" @doAction="doSelect" />
+        </div>
+        <div v-if="data.length > 0" :class="{ 'player-boss': bossPlayer === 2 }" class="player-info"><p class="count">{{ data.length }}</p>Player2</div>
+        <div v-if="gameState" class="player-btn">
+            <div @click="$emit('doAction', 'Play')" class="item">出牌</div>
+            <div @click="$emit('doAction', 'Prompt')" class="item">提示</div>
+            <div v-if="previousPlayer !== 2" @click="$emit('doAction', 'Pass')" class="item">要不起</div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
+import { useStore } from 'vuex'
+
+import { Poker } from './../assets/@types';
+
+import Card from './Card.vue'
 
 export default defineComponent({
     name: 'Player2',
-    components: {},
-    props: {
-        data: Array,
-        gameState: Boolean
+    components: {
+        Card
     },
+    props: {
+        data: {
+            type: Array,
+            default: [],
+        },
+        gameState: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    emits: ['doAction'],
     setup(props, { emit }) {
-        // 出牌
-        const doPlay = (item: object) => {
-            emit('doAction', item)
+        const store = useStore()
+
+        const doSelect = (item: Poker) => {
+            if (props.gameState) {
+                emit('doAction', 'Select', item)
+            }
         }
 
         return {
-            doPlay,
+            bossPlayer: computed(() : Number => store.state.bossPlayer),
+            previousPlayer: computed(() : Number => store.state.previousPlayer),
+            selectCards: computed(() : Number => store.state.selectCards),
+            doSelect,
         }
     }
 })
 </script>
 
 <style scoped>
-    .model-wrap{position: fixed;bottom:0;left:0;right:0;}
-    .model-title{position: absolute;bottom:0;left:50%;transform: translateX(-50%);font-size: 5vw;font-weight: bold;opacity: .1;}
-    .model-list{position:relative;display: flex;justify-content: center;}
-    .model-item{width:1vw;font-size: 1vw;line-height: 1;padding: 2vw .2vw;font-weight: bold;writing-mode:vertical-rl;cursor: pointer;}
-    .model-btn{position: absolute;bottom:15vh;left:50%;transform: translateX(-50%);font-size: 2vw;font-weight: bold;cursor: pointer;}
+    .model-wrap{position: absolute;bottom:0;left:0;right:0;}
+    .player-card{position: absolute;left:50%;bottom:3vw; width:6.3vw;height:8.8vw;overflow:visible;transform:translateX(-50%);}
+    .player-info{position: absolute;left:30vw;bottom:4.5vw; font-size:14px;color:#fff;}
+    .player-info .count{border:2px solid #fff;border-radius: 6px;width:3vw;height: 3vw;line-height: 3vw;text-align: center;font-size: 2vw;margin-bottom: .5vw;}
+    .player-boss{color:#ffc107;}
+    .player-boss .count{border-color: #ffc107;background-image:linear-gradient(#033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7);}
+    .player-btn{position: absolute;right:24vw;bottom:3vw;}
+    .player-btn .item{margin-top:10px;border-radius: 6px;font-size:14px;background-color:#ffc107;color:#fff;border:2px solid #fff;padding:2px 5px;text-align: center;cursor: pointer;}
 </style>

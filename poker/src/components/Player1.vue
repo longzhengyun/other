@@ -1,27 +1,44 @@
 <template>
     <div class="model-wrap">
-        <h3 class="model-title">Player 1</h3>
-        <ul class="model-list">
-            <li v-for="(item, key) in data" :key="key" class="model-item">Card {{ key + 1 }}</li>
-        </ul>
+        <div class="player-card">
+            <card :data="data" />
+        </div>
+        <div v-if="data.length > 0" :class="{ 'player-boss': bossPlayer === 1 }" class="player-info"><p class="count">{{ data.length }}</p> Player1</div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
+import { useStore } from 'vuex'
+
+import Card from './Card.vue'
 
 export default defineComponent({
     name: 'Player1',
-    components: {},
+    components: {
+        Card,
+    },
     props: {
-        data: Array
+        data: {
+            type: Array,
+            default: [],
+        },
+    },
+    setup() {
+        const store = useStore()
+
+        return {
+            bossPlayer: computed(() : Number => store.state.bossPlayer),
+        }
     }
 })
 </script>
 
 <style scoped>
-    .model-wrap{position: fixed;top:0;left:0;bottom:0;}
-    .model-title{position: absolute;top:50%;left:0;transform: translateY(-50%);font-size: 5vw;font-weight: bold;opacity: .1;writing-mode:vertical-rl;}
-    .model-list{position:relative;display: flex;justify-content: center;flex-direction: column;height: 100vh;}
-    .model-item{height:1vw;font-size: 1vw;text-align: left;line-height: 1;padding: .2vw 2vw;font-weight: bold;}
+    .model-wrap{position: absolute;top:0;bottom: 0;left:0;}
+    .player-card{position: absolute;top:50%;left:3vw; width:6.3vw;height:8.8vw;overflow:visible;transform:rotate(90deg) translateX(-50%);}
+    .player-info{position: absolute;top:4vw;left:4.5vw; font-size:14px;color:#fff;}
+    .player-info .count{border:2px solid #fff;border-radius: 6px;width:3vw;height: 3vw;line-height: 3vw;text-align: center;font-size: 2vw;margin-bottom: .5vw;}
+    .player-boss{color:#ffc107;}
+    .player-boss .count{border-color: #ffc107;background-image:linear-gradient(#033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7);}
 </style>

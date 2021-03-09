@@ -25,4 +25,5 @@ div:focus{outline:none;}
   -moz-osx-font-smoothing: grayscale;
   color: #333;
   height: 100%;
+  user-select: none;
 }
