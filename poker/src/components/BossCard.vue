@@ -30,6 +30,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-    .model-wrap{position: fixed;top:10vw;left:50%;transform: translateX(-50%);}
+    .model-wrap{position: fixed;top:12vw;left:50%;transform: translateX(-50%);}
     .model-card{width:6.3vw;height:8.8vw;overflow:visible;}
 </style>

@@ -25,7 +25,10 @@ export const getSelectCards = (item: Poker, selectCards: Poker[]) => {
 
 // 出牌
 export const doPlayCards = (data: Poker[], previousCards: Poker[], state: Boolean) => {
-    let result: Poker[] = []
+    const result: Poker[] = []
+
+    if (state) {
+    }
 
     return result
 }

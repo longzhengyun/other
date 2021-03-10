@@ -26,4 +26,8 @@ div:focus{outline:none;}
   color: #333;
   height: 100%;
   user-select: none;
+  background-color: #033e76;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

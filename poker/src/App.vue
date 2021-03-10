@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, watch, computed } from 'vue';
-import { useStore } from 'vuex'
+import { useStore } from './store';
 
 import PokerData from './assets/data/poker.json'
 import { formatData, getSelectCards, doPlayCards } from './assets/js/utils';
@@ -80,9 +80,9 @@ export default defineComponent({
         const selectCards = computed(() : Poker[] => store.state.selectCards)
 
         // 监听当前玩家
-        watch(currentPlayer, (currentPlayer: Number) => {
-            if (currentPlayer === 1) { // Player 1
-                const playCards = doPlayCards(state.player1, previousCards, Number(previousPlayer) === 1)
+        watch(currentPlayer, (curPlayer: Number) => {
+            if (curPlayer === 1) { // Player 1
+                const playCards = doPlayCards(state.player1, previousCards.value, previousPlayer.value === 1)
 
                 if (playCards.length !== 0) {
                     setTimeout(() => {
@@ -107,51 +107,30 @@ export default defineComponent({
                 }
             }
 
-            if (currentPlayer === 3) { // Player 3
-                // let object: Poker = {
-                //     id: 0,
-                //     name: '',
-                //     value: 0,
-                //     type: 0,
-                // }
+            if (curPlayer === 3) { // Player 3
+                const playCards = doPlayCards(state.player3, previousCards.value, previousPlayer.value === 3)
 
-                // if (state.previousPlayer === 3) {
-                //     object = state.player3[state.player3.length - 1]
-                // } else {
-                //     state.player3.forEach((item) => {
-                //         if (item.value > state.previousPoker.value) {
-                //             if (object.id !== 0) {
-                //                 if (object.value > item.value) {
-                //                     object = item
-                //                 }
-                //             } else {
-                //                 object = item
-                //             }
-                //         }
-                //     })
-                // }
+                if (playCards.length !== 0) {
+                    setTimeout(() => {
+                        state.player3 = state.player3.filter((value: Poker) => {
+                            return !playCards.includes(value)
+                        })
+                        state.cardBox.concat(playCards)
 
-                // if (object.id !== 0) {
-                //     setTimeout(() => {
-                //         state.player3 = state.player3.filter((value: Poker) => {
-                //             return value.id !== object.id
-                //         })
-                //         state.cardBox.push(object)
+                        if (state.player3.length === 0) {
+                            doEnd(3)
+                            return false
+                        }
 
-                //         if (state.player3.length === 0) {
-                //             doEnd(3)
-                //             return false
-                //         }
-
-                //         state.previousPlayer = 3
-                //         state.previousPoker = object
-                //         state.currentPlayer = 1
-                //     }, 1000);
-                // } else {
-                //     setTimeout(() => {
-                //         state.currentPlayer = 1
-                //     }, 1000);
-                // }
+                        store.commit('previousCards', playCards)
+                        store.commit('previousPlayer', 3)
+                        store.commit('currentPlayer', 1)
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        store.commit('currentPlayer', 1)
+                    }, 1000);
+                }
             }
         })
 
@@ -195,11 +174,37 @@ export default defineComponent({
                     state.bossCard = state.cardBox.concat()
                     state.cardBox = []
 
-                    state.showBtn = true
+                    if (bossPlayer.value !== 0) {
+                        state.btnType = 1
+                        getBossCards(bossPlayer.value)
+                    } else {
+                        state.showBtn = true
+                    }
+
                     state.dealIndex = 1
                     clearTimeout(timer)
                 }
             }, 100)
+        }
+
+        // 地主拿牌
+        const getBossCards = (player: Number) => {
+            if (player === 1) {
+                state.player1 = state.player1.concat(state.bossCard)
+                state.player1.sort(formatData)
+            }
+
+            if (player === 2) {
+                state.player2 = state.player2.concat(state.bossCard)
+                state.player2.sort(formatData)
+            }
+
+            if (player === 3) {
+                state.player3 = state.player3.concat(state.bossCard)
+                state.player3.sort(formatData)
+            }
+
+            doStart() // 开始游戏
         }
 
         // 抢地主
@@ -211,23 +216,7 @@ export default defineComponent({
                 count++
                 if (count == 50) {
                     clearInterval(timer)
-
-                    if (i === 1) {
-                        state.player1 = state.player1.concat(state.bossCard)
-                        state.player1.sort(formatData)
-                    }
-
-                    if (i === 2) {
-                        state.player2 = state.player2.concat(state.bossCard)
-                        state.player2.sort(formatData)
-                    }
-
-                    if (i === 3) {
-                        state.player3 = state.player3.concat(state.bossCard)
-                        state.player3.sort(formatData)
-                    }
-
-                    doStart() // 开始游戏
+                    getBossCards(i)
                 }
             }, 50)
         }
@@ -236,7 +225,7 @@ export default defineComponent({
         const doStart = () => {
             state.gameState = true
             state.showBossCard = true
-            store.commit('currentPlayer', bossPlayer)
+            store.commit('currentPlayer', bossPlayer.value)
         }
 
         // 结束游戏
@@ -248,7 +237,7 @@ export default defineComponent({
             state.player2 = []
             state.player3 = []
 
-            store.commit('bossPlayer', 0)
+            store.commit('bossPlayer', player)
             store.commit('previousCards', [])
             store.commit('currentPlayer', 0)
             store.commit('previousPlayer', 0)
@@ -271,14 +260,14 @@ export default defineComponent({
         // 出牌
         const playAction = (type: String, data: Poker) => {
             if (type === 'Select') {
-                const select = getSelectCards(data, selectCards)
+                const select = getSelectCards(data, selectCards.value)
                 store.commit('selectCards', select)
             }
 
             if (type === 'Play') {}
 
             if (type === 'Prompt') {
-                const playCards = doPlayCards(state.player2, previousCards, Number(previousPlayer) === 2)
+                const playCards = doPlayCards(state.player2, previousCards.value, previousPlayer.value === 2)
                 store.commit('selectCards', playCards)
             }
 

@@ -1,4 +1,5 @@
-import { createStore } from 'vuex'
+import { InjectionKey } from 'vue'
+import { createStore, useStore as baseUseStore, Store, createLogger } from 'vuex'
 
 import { Poker, StoreState } from './../assets/@types';
 
@@ -30,8 +31,15 @@ const mutations = {
 
 const actions = {}
 
-export default createStore({
+export const key: InjectionKey<Store<StoreState>> = Symbol()
+
+export const store = createStore<StoreState>({
     state,
     mutations,
     actions,
+    plugins: [createLogger()],
 })
+
+export const useStore = () => {
+    return baseUseStore(key)
+}

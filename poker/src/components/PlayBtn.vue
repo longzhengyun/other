@@ -23,5 +23,5 @@ export default defineComponent({
 
 <style scoped>
     .model-btn{position: absolute;top: 50%; left: 50%;transform: translate(-50%, -50%);}
-    .model-btn .item{border-radius: 6px;font-size:28px;background-color:#ffc107;color:#fff;border:2px solid #fff;padding:5px 20px;cursor: pointer;}
+    .model-btn .item{border-radius: 1vw;font-size:1.7vw;background-color:#ffc107;color:#fff;border:2px solid #fff;padding:.5vw 1.5vw;font-weight: bold;cursor: pointer;}
 </style>

@@ -18,5 +18,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-    .table-wrap{position:relative;width:100vw;height:100vh;overflow:hidden;background-image:radial-gradient(#1e92c7, #033e76);}
+    .table-wrap{position:relative;width:100vw;height:56.22vw;overflow:hidden;background-image:radial-gradient(#1e92c7, #033e76 70%);}
 </style>

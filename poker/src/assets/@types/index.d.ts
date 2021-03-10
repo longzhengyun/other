@@ -5,6 +5,11 @@ export interface Poker {
     type: Bigint,
 }
 
+export interface Cards {
+    type: Number,
+    data: Poker[],
+}
+
 export interface StoreState {
     bossPlayer: Number,
     currentPlayer: Number,
