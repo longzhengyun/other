@@ -26,8 +26,8 @@ import { defineComponent, reactive, watch, computed } from 'vue';
 import { useStore } from './store';
 
 import PokerData from './assets/data/poker.json'
-import { formatData, getSelectCards, doPlayCards } from './assets/js/utils';
-import { Poker, MainState } from './assets/@types';
+import { formatData, changeSelectCards, doConfirmCards, getCardsInfo } from './assets/js/utils';
+import { Poker, Cards, MainState } from './assets/@types';
 
 import PlayBtn from './components/PlayBtn.vue'
 import BossCard from './components/BossCard.vue'
@@ -74,61 +74,69 @@ export default defineComponent({
         const previousPlayer = computed(() : Number => store.state.previousPlayer)
 
         // 上一次出牌
-        const previousCards = computed(() : Poker[] => store.state.previousCards)
+        const previousCards = computed(() : Cards => store.state.previousCards)
 
         // 选择的牌
         const selectCards = computed(() : Poker[] => store.state.selectCards)
 
         // 监听当前玩家
-        watch(currentPlayer, (curPlayer: Number) => {
-            if (curPlayer === 1) { // Player 1
-                const playCards = doPlayCards(state.player1, previousCards.value, previousPlayer.value === 1)
+        watch(currentPlayer, (player: Number) => {
+            if (player === 1) { // Player 1
+                const confirmCards = doConfirmCards(state.player1, previousCards.value, previousPlayer.value === 1)
 
-                if (playCards.length !== 0) {
+                const i = Math.floor(Math.random() * 10) // 添加10%不出率
+                const cardsInfo = getCardsInfo(i >= 1 ? confirmCards : [])
+
+                if (cardsInfo.type !== 0) {
                     setTimeout(() => {
                         state.player1 = state.player1.filter((value: Poker) => {
-                            return !playCards.includes(value)
+                            return !cardsInfo.data.includes(value)
                         })
-                        state.cardBox.concat(playCards)
+                        state.cardBox.concat(cardsInfo.data)
 
                         if (state.player1.length === 0) {
                             doEnd(1)
                             return false
                         }
 
-                        store.commit('previousCards', playCards)
+                        store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 1)
                         store.commit('currentPlayer', 2)
                     }, 1000);
                 } else {
                     setTimeout(() => {
                         store.commit('currentPlayer', 2)
+                        alert('要不起')
                     }, 1000);
                 }
             }
 
-            if (curPlayer === 3) { // Player 3
-                const playCards = doPlayCards(state.player3, previousCards.value, previousPlayer.value === 3)
+            if (player === 3) { // Player 3
+                const confirmCards = doConfirmCards(state.player3, previousCards.value, previousPlayer.value === 3)
 
-                if (playCards.length !== 0) {
+                const i = Math.floor(Math.random() * 10) // 添加10%不出率
+                const cardsInfo = getCardsInfo(i >= 1 ? confirmCards : [])
+
+                if (cardsInfo.type !== 0) {
                     setTimeout(() => {
                         state.player3 = state.player3.filter((value: Poker) => {
-                            return !playCards.includes(value)
+                            return !cardsInfo.data.includes(value)
                         })
-                        state.cardBox.concat(playCards)
+                        state.cardBox.concat(cardsInfo.data)
 
                         if (state.player3.length === 0) {
                             doEnd(3)
                             return false
                         }
 
-                        store.commit('previousCards', playCards)
+                        store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 3)
                         store.commit('currentPlayer', 1)
                     }, 1000);
                 } else {
                     setTimeout(() => {
                         store.commit('currentPlayer', 1)
+                        alert('要不起')
                     }, 1000);
                 }
             }
@@ -187,7 +195,7 @@ export default defineComponent({
             }, 100)
         }
 
-        // 地主拿牌
+        // 拿底牌
         const getBossCards = (player: Number) => {
             if (player === 1) {
                 state.player1 = state.player1.concat(state.bossCard)
@@ -238,9 +246,14 @@ export default defineComponent({
             state.player3 = []
 
             store.commit('bossPlayer', player)
-            store.commit('previousCards', [])
             store.commit('currentPlayer', 0)
             store.commit('previousPlayer', 0)
+            store.commit('previousCards', {
+                type: 0,
+                value: 0,
+                data: []
+            })
+            store.commit('selectCards', [])
 
             let winText = ''
             if (player === 1) {
@@ -260,15 +273,36 @@ export default defineComponent({
         // 出牌
         const playAction = (type: String, data: Poker) => {
             if (type === 'Select') {
-                const select = getSelectCards(data, selectCards.value)
+                const select = changeSelectCards(data, selectCards.value)
                 store.commit('selectCards', select)
             }
 
-            if (type === 'Play') {}
+            if (type === 'Play' && selectCards.value.length !== 0) {
+                const cardsInfo = getCardsInfo(selectCards.value)
+
+                if (cardsInfo.type !== 0) {
+                    setTimeout(() => {
+                        state.player2 = state.player2.filter((value: Poker) => {
+                            return !cardsInfo.data.includes(value)
+                        })
+                        state.cardBox.concat(cardsInfo.data)
+
+                        if (state.player2.length === 0) {
+                            doEnd(2)
+                            return false
+                        }
+
+                        store.commit('selectCards', [])
+                        store.commit('previousCards', cardsInfo)
+                        store.commit('previousPlayer', 2)
+                        store.commit('currentPlayer', 3)
+                    }, 1000);
+                }
+            }
 
             if (type === 'Prompt') {
-                const playCards = doPlayCards(state.player2, previousCards.value, previousPlayer.value === 2)
-                store.commit('selectCards', playCards)
+                const confirmCards = doConfirmCards(state.player2, previousCards.value, previousPlayer.value === 2)
+                store.commit('selectCards', confirmCards)
             }
 
             if (type === 'Pass') {

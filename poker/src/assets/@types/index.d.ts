@@ -7,6 +7,7 @@ export interface Poker {
 
 export interface Cards {
     type: Number,
+    value: Bigint,
     data: Poker[],
 }
 
@@ -14,7 +15,7 @@ export interface StoreState {
     bossPlayer: Number,
     currentPlayer: Number,
     previousPlayer: Number,
-    previousCards: Poker[],
+    previousCards: Cards,
     selectCards: Poker[],
 }
 
