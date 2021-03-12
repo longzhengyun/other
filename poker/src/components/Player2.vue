@@ -14,9 +14,9 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import { useStore } from './../store';
+import { useStore } from './../store'
 
-import { Poker } from './../assets/@types';
+import { Poker } from './../assets/@types'
 
 import Card from './Card.vue'
 

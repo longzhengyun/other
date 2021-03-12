@@ -1,7 +1,7 @@
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store, createLogger } from 'vuex'
 
-import { Poker, Cards, StoreState } from './../assets/@types';
+import { Poker, Cards, StoreState } from './../assets/@types'
 
 const state = {
     bossPlayer: 0,

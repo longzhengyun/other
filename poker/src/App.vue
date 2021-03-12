@@ -22,12 +22,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, watch, computed } from 'vue';
-import { useStore } from './store';
+import { defineComponent, reactive, watch, computed } from 'vue'
+import { useStore } from './store'
 
 import PokerData from './assets/data/poker.json'
-import { formatData, changeSelectCards, doConfirmCards, getCardsInfo } from './assets/js/utils';
-import { Poker, Cards, MainState } from './assets/@types';
+import { formatData, changeSelectCards, doConfirmCards, getCardsInfo } from './assets/js/utils'
+import { Poker, Cards, MainState } from './assets/@types'
 
 import PlayBtn from './components/PlayBtn.vue'
 import BossCard from './components/BossCard.vue'
@@ -82,7 +82,8 @@ export default defineComponent({
         // 监听当前玩家
         watch(currentPlayer, (player: Number) => {
             if (player === 1) { // Player 1
-                const confirmCards = doConfirmCards(state.player1, previousCards.value, previousPlayer.value === 1)
+            let playerState = previousPlayer.value === 0 || previousPlayer.value === 1
+                const confirmCards = doConfirmCards(state.player1, previousCards.value, playerState)
 
                 const i = Math.floor(Math.random() * 10) // 添加10%不出率
                 const cardsInfo = getCardsInfo(i >= 1 ? confirmCards : [])
@@ -102,17 +103,18 @@ export default defineComponent({
                         store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 1)
                         store.commit('currentPlayer', 2)
-                    }, 1000);
+                    }, 1000)
                 } else {
                     setTimeout(() => {
                         store.commit('currentPlayer', 2)
                         alert('要不起')
-                    }, 1000);
+                    }, 1000)
                 }
             }
 
             if (player === 3) { // Player 3
-                const confirmCards = doConfirmCards(state.player3, previousCards.value, previousPlayer.value === 3)
+            let playerState = previousPlayer.value === 0 || previousPlayer.value === 3
+                const confirmCards = doConfirmCards(state.player3, previousCards.value, playerState)
 
                 const i = Math.floor(Math.random() * 10) // 添加10%不出率
                 const cardsInfo = getCardsInfo(i >= 1 ? confirmCards : [])
@@ -132,12 +134,12 @@ export default defineComponent({
                         store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 3)
                         store.commit('currentPlayer', 1)
-                    }, 1000);
+                    }, 1000)
                 } else {
                     setTimeout(() => {
                         store.commit('currentPlayer', 1)
                         alert('要不起')
-                    }, 1000);
+                    }, 1000)
                 }
             }
         })
@@ -240,7 +242,9 @@ export default defineComponent({
         const doEnd = (player: Number) => {
             state.showBtn = true
             state.cardBox = []
-            state.gameState = false,
+            state.bossCard = []
+            state.showBossCard = false
+            state.gameState = false
             state.player1 = []
             state.player2 = []
             state.player3 = []
@@ -296,12 +300,13 @@ export default defineComponent({
                         store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 2)
                         store.commit('currentPlayer', 3)
-                    }, 1000);
+                    }, 1000)
                 }
             }
 
             if (type === 'Prompt') {
-                const confirmCards = doConfirmCards(state.player2, previousCards.value, previousPlayer.value === 2)
+                let playerState = previousPlayer.value === 0 || previousPlayer.value === 2
+                const confirmCards = doConfirmCards(state.player2, previousCards.value, playerState)
                 store.commit('selectCards', confirmCards)
             }
 
