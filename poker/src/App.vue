@@ -82,11 +82,11 @@ export default defineComponent({
         // 监听当前玩家
         watch(currentPlayer, (player: Number) => {
             if (player === 1) { // Player 1
-            let playerState = previousPlayer.value === 0 || previousPlayer.value === 1
+                let playerState = previousPlayer.value === 0 || previousPlayer.value === 1
                 const confirmCards = doConfirmCards(state.player1, previousCards.value, playerState)
 
                 const i = Math.floor(Math.random() * 10) // 添加10%不出率
-                const cardsInfo = getCardsInfo(i >= 1 ? confirmCards : [])
+                const cardsInfo = getCardsInfo(playerState || i >= 1 ? confirmCards : [])
 
                 if (cardsInfo.type !== 0) {
                     setTimeout(() => {
@@ -95,29 +95,28 @@ export default defineComponent({
                         })
                         state.cardBox.concat(cardsInfo.data)
 
+                        store.commit('previousCards', cardsInfo)
+                        store.commit('previousPlayer', 1)
+                        store.commit('currentPlayer', 2)
+
                         if (state.player1.length === 0) {
                             doEnd(1)
                             return false
                         }
-
-                        store.commit('previousCards', cardsInfo)
-                        store.commit('previousPlayer', 1)
-                        store.commit('currentPlayer', 2)
                     }, 1000)
                 } else {
                     setTimeout(() => {
                         store.commit('currentPlayer', 2)
-                        alert('要不起')
                     }, 1000)
                 }
             }
 
             if (player === 3) { // Player 3
-            let playerState = previousPlayer.value === 0 || previousPlayer.value === 3
+                let playerState = previousPlayer.value === 0 || previousPlayer.value === 3
                 const confirmCards = doConfirmCards(state.player3, previousCards.value, playerState)
 
                 const i = Math.floor(Math.random() * 10) // 添加10%不出率
-                const cardsInfo = getCardsInfo(i >= 1 ? confirmCards : [])
+                const cardsInfo = getCardsInfo(playerState || i >= 1 ? confirmCards : [])
 
                 if (cardsInfo.type !== 0) {
                     setTimeout(() => {
@@ -126,19 +125,18 @@ export default defineComponent({
                         })
                         state.cardBox.concat(cardsInfo.data)
 
+                        store.commit('previousCards', cardsInfo)
+                        store.commit('previousPlayer', 3)
+                        store.commit('currentPlayer', 1)
+
                         if (state.player3.length === 0) {
                             doEnd(3)
                             return false
                         }
-
-                        store.commit('previousCards', cardsInfo)
-                        store.commit('previousPlayer', 3)
-                        store.commit('currentPlayer', 1)
                     }, 1000)
                 } else {
                     setTimeout(() => {
                         store.commit('currentPlayer', 1)
-                        alert('要不起')
                     }, 1000)
                 }
             }
@@ -291,15 +289,15 @@ export default defineComponent({
                         })
                         state.cardBox.concat(cardsInfo.data)
 
-                        if (state.player2.length === 0) {
-                            doEnd(2)
-                            return false
-                        }
-
                         store.commit('selectCards', [])
                         store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 2)
                         store.commit('currentPlayer', 3)
+
+                        if (state.player2.length === 0) {
+                            doEnd(2)
+                            return false
+                        }
                     }, 1000)
                 }
             }

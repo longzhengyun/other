@@ -27,5 +27,5 @@ export default defineComponent({
 
 <style scoped>
     .model-wrap{position: absolute;top:0;left:0;right:0;}
-    .player-card{position: absolute;left:50%;top:1vw; width:6.3vw;height:8.8vw;overflow:visible;transform:translateX(-50%);}
+    .player-card{position: absolute;left:50%;top:2vw; width:6.3vw;height:8.8vw;overflow:visible;transform:translateX(-50%);}
 </style>

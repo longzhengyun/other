@@ -8,6 +8,29 @@ const getCardsCount = (data: Poker[]) => {
     }, {})
 }
 
+// 连续牌分组
+const getCardsGroup = (data: Cards[]) => {
+    let result: Array<Cards[]> = []
+    let i = 0
+
+    data.sort((a, b) => { // 从小到大排序
+        return a.value - b.value
+    })
+
+    result[i] = [data[0]]
+
+    data.reduce((prev: Cards, cur: Cards) => {
+        if (cur.value - prev.value === 1 && cur.value !== 15) { // 排除2
+            result[i].push(cur)
+        } else {
+            result[++i] = [cur]
+        }
+        return cur
+    })
+
+    return result
+}
+
 // 数据过滤
 const filterData = (data1: Poker[], data2: Cards[]) => {
     return data1.filter((item1: Poker) => {
@@ -27,7 +50,7 @@ const getAlone = (data: Poker[], type: Number): Cards[] => {
 
     const cardsCount = getCardsCount(data)
 
-    if (type === 11) {
+    if (type === 13) {
         if (cardsCount[16] === 1 && cardsCount[17] === 1) { // 王炸
             const array: Poker[] = []
             data.forEach((item) => {
@@ -68,18 +91,71 @@ const getAlone = (data: Poker[], type: Number): Cards[] => {
 
 // 获取 单顺 双顺 三顺
 const getRow = (data: Poker[], type: Number): Cards[] => {
-    const result: Cards[] = []
+    let result: Cards[] = []
 
     const cardsCount = getCardsCount(data)
-    const array = Object.keys(cardsCount).sort((a: String, b: String) => { // 从小到大排序
-        return Number(a) - Number(b)
-    })
+    let count = 0
+    let snapArray: Cards[] = []
+    switch (type) {
+        case 5:
+            count = 1
+            break
+        case 6:
+            count = 2
+            break
+        case 7:
+            count = 3
+            break
+    }
 
-    if (type === 1) { }
+    for (const key in cardsCount) {
+        if (cardsCount[key] === count) {
+            const array: Poker[] = []
+            data.forEach((item) => {
+                if (item.value === Number(key)) {
+                    array.push(item)
+                }
+            })
 
-    if (type === 2) { }
+            snapArray.push({
+                type,
+                value: Number(key),
+                data: array
+            })
+        }
+    }
 
-    if (type === 3) { }
+    if (snapArray.length > 0) {
+        const groupArray = getCardsGroup(snapArray)
+
+        console.log(groupArray)
+
+        if (type === 5) {
+            groupArray.forEach((item) => {
+                if (item.length >= 5) {
+                    result = result.concat(item)
+                }
+            })
+        }
+
+        if (type === 6) {
+            groupArray.forEach((item) => {
+                if (item.length >= 3) {
+                    result = result.concat(item)
+                }
+            })
+        }
+
+        if (type === 7) {
+            groupArray.forEach((item) => {
+                if (item.length >= 2) {
+                    result = result.concat(item)
+                }
+            })
+        }
+    }
+
+    console.log(result)
 
     return result.sort((a, b) => { // 从小到大排序
         return a.value - b.value
@@ -144,7 +220,7 @@ const isRowMore = (data: any, type: Number): Number => {
     const object1: any = {}
     const object2: any = {}
     for (const item in data) {
-        if (data[item] === type) { // 三顺或者炸弹
+        if (data[item] === type) { // 三顺或者四顺
             object1[item] = data[item]
         } else { // 其他
             object2[item] = data[item]
@@ -178,12 +254,14 @@ const isRowMore = (data: any, type: Number): Number => {
             }
         }
 
-        if (isSingle) { // 三顺带单 炸弹带单
-            result = 1
-        }
+        if ((type === 3 && Object.keys(data).length === 2) || (type === 4 && Object.keys(data).length === 3)) {
+            if (isSingle) { // 三顺带单 炸弹带单
+                result = 1
+            }
 
-        if (isDouble) { // 三顺单双 炸弹带双
-            result = 2
+            if (isDouble) { // 三顺单双 炸弹带双
+                result = 2
+            }
         }
     }
 
@@ -223,42 +301,64 @@ export const changeSelectCards = (item: Poker, selectCards: Poker[]): Poker[] =>
 export const doConfirmCards = (data: Poker[], previousCards: Cards, state: Boolean): Poker[] => {
     let result: Poker[] = []
 
-    const four = getAlone(data, 8) // 四张
+    const four = getAlone(data, 4) // 四张
 
     const threeRowData = filterData(data, four)
-    const threeRow = getRow(threeRowData, 5) // 三顺
+    const threeRow = getRow(threeRowData, 7) // 三顺
 
     const doubleRowData = filterData(threeRowData, threeRow)
-    const doubleRow = getRow(doubleRowData, 4) // 双顺
+    const doubleRow = getRow(doubleRowData, 6) // 双顺
 
     const singleRowData = filterData(doubleRowData, doubleRow)
-    const singleRow = getRow(singleRowData, 3) // 单顺
+    const singleRow = getRow(singleRowData, 5) // 单顺
 
     const threeData = filterData(singleRowData, singleRow)
-    const three = getAlone(threeData, 5) // 三张
+    const three = getAlone(threeData, 3) // 三张
 
     const doubleData = filterData(threeData, three)
     const double = getAlone(doubleData, 2) // 两张
 
-    const singleData = filterData(doubleData, double)
+    const boomData = filterData(doubleData, double)
+    const boom = getAlone(boomData, 13) // 王炸
+
+    const singleData = filterData(boomData, boom)
     const single = getAlone(singleData, 1) // 单张
 
-    const boomData = filterData(singleData, single)
-    const boom = getAlone(boomData, 11) // 王炸
-
     if (state) {
-        if (single.length > 0) {
-            result = single[0].data
-        } else if (double.length > 0) {
-            result = double[0].data
-        } else if (three.length > 0) {
-            result = three[0].data
-        } else if (singleRow.length > 0) {
+        if (singleRow.length > 0) {
             result = singleRow[0].data
         } else if (doubleRow.length > 0) {
             result = doubleRow[0].data
         } else if (threeRow.length > 0) {
+            const firstData = threeRow[0]
+            const length = firstData.data.length / 3
+
             result = threeRow[0].data
+            if (single.length >= length) {
+                single.forEach((item, index) => {
+                    if (index < length) {
+                        result = result.concat(item.data)
+                    }
+                })
+            } else if (double.length >= length) {
+                double.forEach((item, index) => {
+                    if (index < length) {
+                        result = result.concat(item.data)
+                    }
+                })
+            }
+        } else if (three.length > 0) {
+            result = three[0].data
+
+            if (single.length > 0) {
+                result = result.concat(single[0].data)
+            } else if (double.length > 0) {
+                result = result.concat(double[0].data)
+            }
+        } else if (double.length > 0) {
+            result = double[0].data
+        } else if (single.length > 0) {
+            result = single[0].data
         } else if (four.length > 0) {
             result = four[0].data
         } else if (boom.length > 0) {
@@ -269,8 +369,8 @@ export const doConfirmCards = (data: Poker[], previousCards: Cards, state: Boole
     return result
 }
 
-// 按张数分类：1 单张 2 两张 王炸 3+ 单顺 双顺 三顺 三顺带单 三顺带双 四顺 四顺带单 四顺带双
-// 牌型规则： 1 单张 2 两张 3 单顺 4 双顺 5 三顺 6 三顺带单 7 三顺带双 8 四顺 9 四顺带单 10 四顺带双 11 王炸
+// 按张数分类：1 单张 2 两张 王炸 3 三张 4 四张 三顺带单 5+ 单顺 双顺 三顺 三顺带单 三顺带双 四顺 四顺带单 四顺带双
+// 牌型规则： 1 单张 2 两张 3 三张 4 四张 5 单顺 6 双顺 7 三顺 8 三顺带单 9 三顺带双 10 四顺 11 四顺带单 12 四顺带双 13 王炸
 export const getCardsInfo = (selectCards: Poker[]): Cards => {
     let type: Number = 0
     let value: Number = 0
@@ -280,44 +380,63 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
         const cardsCount = getCardsCount(data)
         const first = data[0].value
 
-        // 单张
-        if (data.length === 1) {
+        if (data.length === 1) { // 单张
             type = 1
             value = first
-        }
-
-        // 两张 王炸
-        if (data.length === 2) {
+        } else if (data.length === 2) { // 两张 王炸
             if (cardsCount[first] === 2) { // 两张
                 type = 2
                 value = first
             }
 
             if (cardsCount[16] === 1 && cardsCount[17] === 1) { // 王炸
-                type = 11
+                type = 13
             }
-        }
+        } else if (data.length === 3) { // 三张
+            if (cardsCount[first] === 3) {
+                type = 3
+                value = first
+            }
+        } else if (data.length === 4) { // 四张 三顺带单
+            if (cardsCount[first] === 4) { // 四张
+                type = 4
+                value = first
+            } else { // 三顺带单
+                let threeRowMore = isRowMore(cardsCount, 3)
+                if (threeRowMore === 1) {
+                    type = 8
+                }
 
-        // 单顺 双顺 三顺 三顺带单 三顺带双 四顺 四顺带单 四顺带双
-        if (data.length >= 3) {
+                let result = 0
+                for (const key in cardsCount) {
+                    if (cardsCount[key] === 3) {
+                        if (Number(key) > result) {
+                            result = Number(key)
+                        }
+                    }
+                }
+
+                value = result
+            }
+        } else if (data.length >= 5) { // 单顺 双顺 三顺 三顺带单 三顺带双 四顺 四顺带单 四顺带双
             // 单顺
             let singleRow = isRow(cardsCount, 1)
             if (singleRow) {
-                type = 3
+                type = 5
                 value = data[0].value
             }
 
             // 双顺
             let doubleRow = isRow(cardsCount, 2)
             if (doubleRow) {
-                type = 4
+                type = 6
                 value = data[0].value
             }
 
             // 三顺
             let threeRow = isRow(cardsCount, 3)
             if (threeRow) {
-                type = 5
+                type = 7
                 value = data[0].value
             }
 
@@ -325,11 +444,11 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
             let threeRowMore = isRowMore(cardsCount, 3)
             if (threeRowMore === 1 || threeRowMore === 2) {
                 if (threeRowMore === 1) {
-                    type = 6
+                    type = 8
                 }
 
                 if (threeRowMore === 2) {
-                    type = 7
+                    type = 9
                 }
 
                 let result = 0
@@ -347,7 +466,7 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
             // 四顺
             let fourRow = isRow(cardsCount, 4)
             if (fourRow) {
-                type = 8
+                type = 10
                 value = data[0].value
             }
 
@@ -355,11 +474,11 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
             let fourRowMore = isRowMore(cardsCount, 4)
             if (fourRowMore === 1 || fourRowMore === 2) {
                 if (fourRowMore === 1) {
-                    type = 9
+                    type = 11
                 }
 
                 if (fourRowMore === 2) {
-                    type = 10
+                    type = 12
                 }
 
                 let result = 0
