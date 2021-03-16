@@ -10,32 +10,64 @@ const getCardsCount = (data: Poker[]) => {
 
 // 连续牌分组
 const getCardsGroup = (data: Cards[]) => {
-    let result: Array<Cards[]> = []
+    let result: Cards[] = []
+    let array: Array<Cards[]> = []
     let i = 0
 
     data.sort((a, b) => { // 从小到大排序
         return a.value - b.value
     })
 
-    result[i] = [data[0]]
+    array[i] = [data[0]]
 
     data.reduce((prev: Cards, cur: Cards) => {
-        if (cur.value - prev.value === 1 && cur.value !== 15) { // 排除2
-            result[i].push(cur)
+        if (cur.value - prev.value === 1) {
+            if (cur.value !== 15) { // 排除2
+                array[i].push(cur)
+            }
         } else {
-            result[++i] = [cur]
+            array[++i] = [cur]
         }
         return cur
+    })
+
+    array.forEach((item1) => {
+        const object: Cards = {
+            type: 0,
+            value: 0,
+            data: []
+        }
+
+        item1.forEach((item2) => {
+            object.type = item2.type
+            object.value = item2.value
+            object.data = object.data.concat(item2.data)
+        })
+
+        result.push(object)
     })
 
     return result
 }
 
-// 数据过滤
-const filterData = (data1: Poker[], data2: Cards[]) => {
+// 过滤数组数据
+const filterArray = (data1: Poker[], data2: Cards[]) => {
     return data1.filter((item1: Poker) => {
         let result = true
         data2.forEach((item2) => {
+            if (item2.value === item1.value) {
+                result = false
+            }
+        })
+        return result
+    })
+}
+
+// 过滤对象数据
+const filterObject = (data1: Poker[], data2: Cards) => {
+    return data1.filter((item1: Poker) => {
+        let result = true
+        data2.data.forEach((item2) => {
             if (item2.value === item1.value) {
                 result = false
             }
@@ -90,8 +122,12 @@ const getAlone = (data: Poker[], type: Number): Cards[] => {
 }
 
 // 获取 单顺 双顺 三顺
-const getRow = (data: Poker[], type: Number): Cards[] => {
-    let result: Cards[] = []
+const getRow = (data: Poker[], type: Number): Cards => {
+    let result: Cards = {
+        type: 0,
+        value: 0,
+        data: []
+    }
 
     const cardsCount = getCardsCount(data)
     let count = 0
@@ -109,11 +145,13 @@ const getRow = (data: Poker[], type: Number): Cards[] => {
     }
 
     for (const key in cardsCount) {
-        if (cardsCount[key] === count) {
+        if (cardsCount[key] >= count) {
             const array: Poker[] = []
+            let number = 0
             data.forEach((item) => {
-                if (item.value === Number(key)) {
+                if (item.value === Number(key) && number < count) {
                     array.push(item)
+                    number++
                 }
             })
 
@@ -128,38 +166,26 @@ const getRow = (data: Poker[], type: Number): Cards[] => {
     if (snapArray.length > 0) {
         const groupArray = getCardsGroup(snapArray)
 
-        console.log(groupArray)
-
         if (type === 5) {
-            groupArray.forEach((item) => {
-                if (item.length >= 5) {
-                    result = result.concat(item)
+            for (let i = 0; i < groupArray.length; i++) {
+                if (groupArray[i].data.length >= 5) {
+                    result = groupArray[i]
+                    break
                 }
-            })
+            }
         }
 
-        if (type === 6) {
-            groupArray.forEach((item) => {
-                if (item.length >= 3) {
-                    result = result.concat(item)
+        if (type === 6 || type === 7) {
+            for (let i = 0; i < groupArray.length; i++) {
+                if (groupArray[i].data.length >= 6) {
+                    result = groupArray[i]
+                    break
                 }
-            })
-        }
-
-        if (type === 7) {
-            groupArray.forEach((item) => {
-                if (item.length >= 2) {
-                    result = result.concat(item)
-                }
-            })
+            }
         }
     }
 
-    console.log(result)
-
-    return result.sort((a, b) => { // 从小到大排序
-        return a.value - b.value
-    })
+    return result
 }
 
 // 判断 单顺 双顺 三顺 四顺
@@ -303,37 +329,37 @@ export const doConfirmCards = (data: Poker[], previousCards: Cards, state: Boole
 
     const four = getAlone(data, 4) // 四张
 
-    const threeRowData = filterData(data, four)
+    const threeRowData = filterArray(data, four)
     const threeRow = getRow(threeRowData, 7) // 三顺
 
-    const doubleRowData = filterData(threeRowData, threeRow)
+    const doubleRowData = filterObject(threeRowData, threeRow)
     const doubleRow = getRow(doubleRowData, 6) // 双顺
 
-    const singleRowData = filterData(doubleRowData, doubleRow)
+    const singleRowData = filterObject(doubleRowData, doubleRow)
     const singleRow = getRow(singleRowData, 5) // 单顺
 
-    const threeData = filterData(singleRowData, singleRow)
+    const threeData = filterObject(singleRowData, singleRow)
     const three = getAlone(threeData, 3) // 三张
 
-    const doubleData = filterData(threeData, three)
+    const doubleData = filterArray(threeData, three)
     const double = getAlone(doubleData, 2) // 两张
 
-    const boomData = filterData(doubleData, double)
+    const boomData = filterArray(doubleData, double)
     const boom = getAlone(boomData, 13) // 王炸
 
-    const singleData = filterData(boomData, boom)
+    const singleData = filterArray(boomData, boom)
     const single = getAlone(singleData, 1) // 单张
 
     if (state) {
-        if (singleRow.length > 0) {
-            result = singleRow[0].data
-        } else if (doubleRow.length > 0) {
-            result = doubleRow[0].data
-        } else if (threeRow.length > 0) {
-            const firstData = threeRow[0]
+        if (singleRow.type !== 0) {
+            result = singleRow.data
+        } else if (doubleRow.type !== 0) {
+            result = doubleRow.data
+        } else if (threeRow.type !== 0) {
+            const firstData = threeRow
             const length = firstData.data.length / 3
 
-            result = threeRow[0].data
+            result = threeRow.data
             if (single.length >= length) {
                 single.forEach((item, index) => {
                     if (index < length) {
