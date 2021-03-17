@@ -6,6 +6,7 @@
         <slot name="player1" />
         <slot name="player2" />
         <slot name="player3" />
+        <slot name="winner" />
     </div>
 </template>
 

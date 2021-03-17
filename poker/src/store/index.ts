@@ -8,8 +8,9 @@ const state = {
     currentPlayer: 0,
     previousPlayer: 0,
     previousCards: {
-        type: 0, // 1 单张 2 两张 3 单顺 4 双顺 5 三顺 6 三顺带单 7 三顺带双 8 四顺 9 四顺带单 10 四顺带双 11 王炸
+        type: 0, // 1 单张 2 两张 3 三张 4 四张 5 单顺 6 双顺 7 三顺 8 三顺带单 9 三顺带双 10 四顺 11 四顺带单 12 四顺带双 13 王炸
         value: 0,
+        length: 0,
         data: []
     },
     selectCards: [],

@@ -35,12 +35,14 @@ const getCardsGroup = (data: Cards[]) => {
         const object: Cards = {
             type: 0,
             value: 0,
+            length: 0,
             data: []
         }
 
         item1.forEach((item2) => {
             object.type = item2.type
             object.value = item2.value
+            object.length = item2.length
             object.data = object.data.concat(item2.data)
         })
 
@@ -93,7 +95,8 @@ const getAlone = (data: Poker[], type: Number): Cards[] => {
 
             result.push({
                 type,
-                value: 0,
+                value: 999,
+                length: 0,
                 data: array
             })
         }
@@ -110,6 +113,7 @@ const getAlone = (data: Poker[], type: Number): Cards[] => {
                 result.push({
                     type,
                     value: Number(key),
+                    length: 1,
                     data: array
                 })
             }
@@ -126,6 +130,7 @@ const getRow = (data: Poker[], type: Number): Cards => {
     let result: Cards = {
         type: 0,
         value: 0,
+        length: 0,
         data: []
     }
 
@@ -158,6 +163,7 @@ const getRow = (data: Poker[], type: Number): Cards => {
             snapArray.push({
                 type,
                 value: Number(key),
+                length: array.length / count,
                 data: array
             })
         }
@@ -390,6 +396,141 @@ export const doConfirmCards = (data: Poker[], previousCards: Cards, state: Boole
         } else if (boom.length > 0) {
             result = boom[0].data
         }
+    } else {
+        let array: Poker[] = []
+        if (previousCards.type === 1) {
+            for (let i = 0; i < single.length; i++) { // 出单张
+                if (single[i].value > previousCards.value) {
+                    array = single[i].data
+                    break
+                }
+            }
+
+            if (array.length === 0) {
+                for (let i = 0; i < double.length; i++) {
+                    if (double[i].value > previousCards.value && double[i].value === 15) { // 两张中拆2
+                        array.push(double[i].data[0])
+                        break
+                    }
+                }
+            }
+
+            if (array.length === 0) {
+                for (let i = 0; i < three.length; i++) {
+                    if (three[i].value > previousCards.value && three[i].value === 15) { // 三张中拆2
+                        array.push(three[i].data[0])
+                        break
+                    }
+                }
+            }
+        }
+
+        if (previousCards.type === 2) {
+            for (let i = 0; i < double.length; i++) { // 出两张
+                if (double[i].value > previousCards.value) {
+                    array = double[i].data
+                    break
+                }
+            }
+
+            if (array.length === 0) {
+                for (let i = 0; i < three.length; i++) {
+                    if (three[i].value > previousCards.value && three[i].value === 15) { // 三张中拆2
+                        array.push(three[i].data[0])
+                        array.push(three[i].data[1])
+                        break
+                    }
+                }
+            }
+        }
+
+        if (previousCards.type === 3) {
+            for (let i = 0; i < three.length; i++) { // 出三张
+                if (three[i].value > previousCards.value) {
+                    array = three[i].data
+                    break
+                }
+            }
+        }
+
+        // if (previousCards.type === 4) {}
+
+        if (previousCards.type === 5) { // 出单顺
+            if (singleRow.value > previousCards.value && singleRow.length >= previousCards.length) {
+                array = singleRow.data.slice(0, Number(previousCards.length) - 1)
+            }
+        }
+
+        if (previousCards.type === 6) { // 出双顺
+            if (doubleRow.value > previousCards.value && doubleRow.length === previousCards.length) {
+                array = doubleRow.data.slice(0, Number(previousCards.length) * 2 - 1)
+            }
+        }
+
+        if (previousCards.type === 7) { // 出三顺
+            if (threeRow.value > previousCards.value && threeRow.length === previousCards.length) {
+                array = threeRow.data.slice(0, Number(previousCards.length) * 3 - 1)
+            }
+        }
+
+        if (previousCards.type === 8) { // 出三顺带单
+            if (previousCards.length === 4) {
+                for (let i = 0; i < three.length; i++) { // 出三张
+                    if (three[i].value > previousCards.value && single.length > 0) {
+                        array = array.concat(three[i].data)
+                        array = array.concat(single[0].data)
+                        break
+                    }
+                }
+            } else {
+                if (threeRow.value > previousCards.value && threeRow.length >= previousCards.length && single.length >= previousCards.length) {
+                    array = array.concat(threeRow.data.slice(0, Number(previousCards.length) * 3 - 1))
+                    for (let i = 0; i < previousCards.length; i++) {
+                        array = array.concat(single[i].data)
+                    }
+                }
+            }
+        }
+
+        if (previousCards.type === 9) { // 出三顺带双
+            if (threeRow.value > previousCards.value && threeRow.length >= previousCards.length && double.length >= previousCards.length) {
+                array = array.concat(threeRow.data.slice(0, Number(previousCards.length) * 3 - 1))
+                for (let i = 0; i < previousCards.length; i++) {
+                    array = array.concat(double[i].data)
+                }
+            }
+        }
+
+        // if (previousCards.type === 10) {}
+
+        // if (previousCards.type === 11) {}
+
+        // if (previousCards.type === 12) {}
+
+        // if (previousCards.type === 13) {}
+
+        if (array.length === 0 && previousCards.type !== 13) {
+            if (previousCards.type === 4) { // 出四张
+                for (let i = 0; i < four.length; i++) {
+                    if (four[i].value > previousCards.value) {
+                        array = four[i].data
+                        break
+                    }
+                }
+            } else {
+                if (four.length > 0) { // 炸弹
+                    array = four[0].data
+                }
+            }
+        }
+
+        if (array.length === 0) {
+            if (boom.length > 0) { // 王炸
+                array = boom[0].data
+            }
+        }
+
+        result = array
     }
 
     return result
@@ -400,6 +541,7 @@ export const doConfirmCards = (data: Poker[], previousCards: Cards, state: Boole
 export const getCardsInfo = (selectCards: Poker[]): Cards => {
     let type: Number = 0
     let value: Number = 0
+    let length: Number = 0
     const data = selectCards.concat().sort(formatData)
 
     if (data.length > 0) {
@@ -409,24 +551,35 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
         if (data.length === 1) { // 单张
             type = 1
             value = first
-        } else if (data.length === 2) { // 两张 王炸
+            length = 1
+        }
+
+        if (data.length === 2) { // 两张 王炸
             if (cardsCount[first] === 2) { // 两张
                 type = 2
                 value = first
+                length = 1
             }
 
             if (cardsCount[16] === 1 && cardsCount[17] === 1) { // 王炸
                 type = 13
+                length = 1
             }
-        } else if (data.length === 3) { // 三张
+        }
+
+        if (data.length === 3) { // 三张
             if (cardsCount[first] === 3) {
                 type = 3
                 value = first
+                length = 1
             }
-        } else if (data.length === 4) { // 四张 三顺带单
+        }
+
+        if (data.length === 4) { // 四张 三顺带单
             if (cardsCount[first] === 4) { // 四张
                 type = 4
                 value = first
+                length = 1
             } else { // 三顺带单
                 let threeRowMore = isRowMore(cardsCount, 3)
                 if (threeRowMore === 1) {
@@ -443,13 +596,17 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
                 }
 
                 value = result
+                length = 1
             }
-        } else if (data.length >= 5) { // 单顺 双顺 三顺 三顺带单 三顺带双 四顺 四顺带单 四顺带双
+        }
+
+        if (data.length >= 5) { // 单顺 双顺 三顺 三顺带单 三顺带双 四顺 四顺带单 四顺带双
             // 单顺
             let singleRow = isRow(cardsCount, 1)
             if (singleRow) {
                 type = 5
                 value = data[0].value
+                length = data.length
             }
 
             // 双顺
@@ -457,6 +614,7 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
             if (doubleRow) {
                 type = 6
                 value = data[0].value
+                length = data.length / 2
             }
 
             // 三顺
@@ -464,6 +622,7 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
             if (threeRow) {
                 type = 7
                 value = data[0].value
+                length = data.length / 3
             }
 
             // 三顺带单 三顺带双
@@ -471,10 +630,12 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
             if (threeRowMore === 1 || threeRowMore === 2) {
                 if (threeRowMore === 1) {
                     type = 8
+                    length = data.length / 4
                 }
 
                 if (threeRowMore === 2) {
                     type = 9
+                    length = data.length / 5
                 }
 
                 let result = 0
@@ -494,6 +655,7 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
             if (fourRow) {
                 type = 10
                 value = data[0].value
+                length = data.length / 4
             }
 
             // 四带单 四带双
@@ -501,10 +663,12 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
             if (fourRowMore === 1 || fourRowMore === 2) {
                 if (fourRowMore === 1) {
                     type = 11
+                    length = data.length / 5
                 }
 
                 if (fourRowMore === 2) {
                     type = 12
+                    length = data.length / 6
                 }
 
                 let result = 0
@@ -521,5 +685,5 @@ export const getCardsInfo = (selectCards: Poker[]): Cards => {
         }
     }
 
-    return { type, value, data }
+    return { type, value, length, data }
 }

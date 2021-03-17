@@ -18,6 +18,9 @@
         <template v-slot:player3>
             <player3 :data="state.player3" />
         </template>
+        <template v-slot:winner>
+            <winner v-if="state.winner !== 0" :data="state.winner" @doAction="restartAction" />
+        </template>
     </card-table>
 </template>
 
@@ -36,6 +39,7 @@ import CardTable from './components/CardTable.vue'
 import Player1 from './components/Player1.vue'
 import Player2 from './components/Player2.vue'
 import Player3 from './components/Player3.vue'
+import Winner from './components/Winner.vue'
 
 export default defineComponent({
     name: 'Index',
@@ -47,6 +51,7 @@ export default defineComponent({
         Player1,
         Player2,
         Player3,
+        Winner,
     },
     setup() {
         const state: MainState = reactive({
@@ -60,6 +65,7 @@ export default defineComponent({
             player1: [],
             player2: [],
             player3: [],
+            winner: 0,
         })
 
         const store = useStore()
@@ -81,64 +87,60 @@ export default defineComponent({
 
         // 监听当前玩家
         watch(currentPlayer, (player: Number) => {
-            if (player === 1) { // Player 1
+            if (player === 1 && state.gameState) { // Player 1
                 let playerState = previousPlayer.value === 0 || previousPlayer.value === 1
                 const confirmCards = doConfirmCards(state.player1, previousCards.value, playerState)
 
                 const i = Math.floor(Math.random() * 10) // 添加10%不出率
                 const cardsInfo = getCardsInfo(playerState || i >= 1 ? confirmCards : [])
 
-                if (cardsInfo.type !== 0) {
-                    setTimeout(() => {
+                setTimeout(() => {
+                    if (cardsInfo.type !== 0) {
                         state.player1 = state.player1.filter((value: Poker) => {
                             return !cardsInfo.data.includes(value)
                         })
-                        state.cardBox.concat(cardsInfo.data)
+                        state.cardBox = state.cardBox.concat(cardsInfo.data)
 
                         store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 1)
-                        store.commit('currentPlayer', 2)
 
                         if (state.player1.length === 0) {
-                            doEnd(1)
+                            state.winner = 1
+                            state.gameState = false
                             return false
                         }
-                    }, 1000)
-                } else {
-                    setTimeout(() => {
-                        store.commit('currentPlayer', 2)
-                    }, 1000)
-                }
+                    }
+
+                    store.commit('currentPlayer', 2)
+                }, 1000)
             }
 
-            if (player === 3) { // Player 3
+            if (player === 3 && state.gameState) { // Player 3
                 let playerState = previousPlayer.value === 0 || previousPlayer.value === 3
                 const confirmCards = doConfirmCards(state.player3, previousCards.value, playerState)
 
                 const i = Math.floor(Math.random() * 10) // 添加10%不出率
                 const cardsInfo = getCardsInfo(playerState || i >= 1 ? confirmCards : [])
 
-                if (cardsInfo.type !== 0) {
-                    setTimeout(() => {
+                setTimeout(() => {
+                    if (cardsInfo.type !== 0) {
                         state.player3 = state.player3.filter((value: Poker) => {
                             return !cardsInfo.data.includes(value)
                         })
-                        state.cardBox.concat(cardsInfo.data)
+                        state.cardBox = state.cardBox.concat(cardsInfo.data)
 
                         store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 3)
-                        store.commit('currentPlayer', 1)
 
                         if (state.player3.length === 0) {
-                            doEnd(3)
+                            state.winner = 3
+                            state.gameState = false
                             return false
                         }
-                    }, 1000)
-                } else {
-                    setTimeout(() => {
-                        store.commit('currentPlayer', 1)
-                    }, 1000)
-                }
+                    }
+
+                    store.commit('currentPlayer', 1)
+                }, 1000)
             }
         })
 
@@ -236,42 +238,6 @@ export default defineComponent({
             store.commit('currentPlayer', bossPlayer.value)
         }
 
-        // 结束游戏
-        const doEnd = (player: Number) => {
-            state.showBtn = true
-            state.cardBox = []
-            state.bossCard = []
-            state.showBossCard = false
-            state.gameState = false
-            state.player1 = []
-            state.player2 = []
-            state.player3 = []
-
-            store.commit('bossPlayer', player)
-            store.commit('currentPlayer', 0)
-            store.commit('previousPlayer', 0)
-            store.commit('previousCards', {
-                type: 0,
-                value: 0,
-                data: []
-            })
-            store.commit('selectCards', [])
-
-            let winText = ''
-            if (player === 1) {
-                winText = 'Player 1 获胜'
-            }
-
-            if (player === 2) {
-                winText = '恭喜您获胜了！'
-            }
-
-            if (player === 3) {
-                winText = 'Player 3 获胜'
-            }
-            alert(winText)
-        }
-
         // 出牌
         const playAction = (type: String, data: Poker) => {
             if (type === 'Select') {
@@ -280,26 +246,31 @@ export default defineComponent({
             }
 
             if (type === 'Play' && selectCards.value.length !== 0) {
-                const cardsInfo = getCardsInfo(selectCards.value)
+                let playerState = previousPlayer.value === 0 || previousPlayer.value === 2
+                const confirmCards = doConfirmCards(selectCards.value, previousCards.value, playerState)
 
-                if (cardsInfo.type !== 0) {
-                    setTimeout(() => {
+                const cardsInfo = getCardsInfo(confirmCards)
+
+                setTimeout(() => {
+                    if (cardsInfo.type !== 0) {
                         state.player2 = state.player2.filter((value: Poker) => {
                             return !cardsInfo.data.includes(value)
                         })
-                        state.cardBox.concat(cardsInfo.data)
+                        state.cardBox = state.cardBox.concat(cardsInfo.data)
 
                         store.commit('selectCards', [])
                         store.commit('previousCards', cardsInfo)
                         store.commit('previousPlayer', 2)
-                        store.commit('currentPlayer', 3)
 
                         if (state.player2.length === 0) {
-                            doEnd(2)
+                            state.winner = 2
+                            state.gameState = false
                             return false
                         }
-                    }, 1000)
-                }
+
+                        store.commit('currentPlayer', 3)
+                    }
+                }, 1000)
             }
 
             if (type === 'Prompt') {
@@ -309,8 +280,32 @@ export default defineComponent({
             }
 
             if (type === 'Pass') {
+                store.commit('selectCards', [])
                 store.commit('currentPlayer', 3)
             }
+        }
+
+        // 再来一局
+        const restartAction = () => {
+            store.commit('bossPlayer', state.winner)
+            store.commit('currentPlayer', 0)
+            store.commit('previousPlayer', 0)
+            store.commit('previousCards', {
+                type: 0,
+                value: 0,
+                length: 0,
+                data: []
+            })
+            store.commit('selectCards', [])
+
+            state.showBtn = true
+            state.cardBox = []
+            state.bossCard = []
+            state.showBossCard = false
+            state.player1 = []
+            state.player2 = []
+            state.player3 = []
+            state.winner = 0
         }
 
         // 按钮
@@ -340,6 +335,7 @@ export default defineComponent({
         return {
             state,
             playAction,
+            restartAction,
             btnAction,
         }
     }

@@ -8,6 +8,7 @@ export interface Poker {
 export interface Cards {
     type: Number,
     value: Bigint,
+    length: Number,
     data: Poker[],
 }
 
@@ -30,4 +31,5 @@ export interface MainState {
     player1: Poker[],
     player2: Poker[],
     player3: Poker[],
+    winner: Number,
 }
