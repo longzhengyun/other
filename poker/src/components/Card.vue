@@ -65,7 +65,7 @@ export default defineComponent({
     .card-item.selected{transform: translateY(-1vw);}
     .card-item.open{width: 6.3vw;margin:0 .5vw;}
     .card-box{position:relative;width:6.3vw;height:100%;border:2px solid #fff;border-radius:.5vw;background-color:#fff;color:black;box-sizing:border-box;box-shadow:1px 1px 3px rgba(0, 0, 0, .5);font-family:fantasy;}
-    .card-back{background-image:radial-gradient(#033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7);}
+    .card-back{background-size: 20px 20px;background-image:radial-gradient(#033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7, #033e76, #1e92c7);}
     .card-name{width:1.5vw;padding:.2vw 0;margin-left:-2px;font-size:1.5vw;line-height:1.5vw;word-break:break-all;text-align: center;}
     .card-copy{position:absolute;right:0;bottom:0;transform:rotateZ(180deg);}
     .card-bg{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);font-size:7vw;opacity:.05;}
