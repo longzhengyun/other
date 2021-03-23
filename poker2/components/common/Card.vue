@@ -11,10 +11,18 @@
             {{ data.name }}
           </div>
           <div v-if="data.id !== 53 && data.id !== 54">
-            <template v-if="data.type === 0">&spades;</template>
-            <template v-if="data.type === 1">&hearts;</template>
-            <template v-if="data.type === 2">&clubs;</template>
-            <template v-if="data.type === 3">&diams;</template>
+            <template v-if="data.type === 0">
+              &spades;
+            </template>
+            <template v-if="data.type === 1">
+              &hearts;
+            </template>
+            <template v-if="data.type === 2">
+              &clubs;
+            </template>
+            <template v-if="data.type === 3">
+              &diams;
+            </template>
           </div>
         </div>
         <div class="card-name card-copy">
@@ -22,17 +30,25 @@
             {{ data.name }}
           </div>
           <template v-if="data.id !== 53 && data.id !== 54">
-            <template v-if="data.type === 0">&spades;</template>
-            <template v-if="data.type === 1">&hearts;</template>
-            <template v-if="data.type === 2">&clubs;</template>
-            <template v-if="data.type === 3">&diams;</template>
+            <template v-if="data.type === 0">
+              &spades;
+            </template>
+            <template v-if="data.type === 1">
+              &hearts;
+            </template>
+            <template v-if="data.type === 2">
+              &clubs;
+            </template>
+            <template v-if="data.type === 3">
+              &diams;
+            </template>
           </template>
         </div>
         <div class="card-bg">
           {{ data.name.length > 3 ? data.name.substring(0, 1) : data.name }}
         </div>
       </div>
-      <div class="card-back"></div>
+      <div class="card-back" />
     </div>
   </div>
 </template>
@@ -45,21 +61,21 @@ export default defineComponent({
   props: {
     data: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     show: {
       type: Boolean,
-      default: false,
+      default: false
     },
     open: {
       type: Boolean,
-      default: false,
+      default: false
     },
     selected: {
       type: Boolean,
-      default: false,
-    },
-  },
+      default: false
+    }
+  }
 })
 </script>
 

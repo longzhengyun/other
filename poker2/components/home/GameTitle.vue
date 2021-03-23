@@ -1,5 +1,7 @@
 <template>
-  <div class="model-wrap">{{ data }}</div>
+  <div class="model-wrap">
+    {{ data }}
+  </div>
 </template>
 
 <script lang="ts">
@@ -10,9 +12,9 @@ export default defineComponent({
   props: {
     data: {
       type: String,
-      default: '',
-    },
-  },
+      default: ''
+    }
+  }
 })
 </script>
 

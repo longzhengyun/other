@@ -6,7 +6,9 @@
       class="list-item"
       @click="$emit('doAction', item)"
     >
-      <div class="item-name">{{ item.text }}</div>
+      <div :class="{ hide: key + 1 === target }" class="item-name">
+        {{ item.text }}
+      </div>
       <card :data="item" :show="key + 1 === target" :open="true" />
     </li>
   </ul>
@@ -15,23 +17,23 @@
 <script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api'
 
-import Card from './../common/Card.vue'
+import Card from '@/components/common/Card.vue'
 
 export default defineComponent({
   name: 'GameOption',
   components: {
-    Card,
+    Card
   },
   props: {
     data: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     target: {
       type: Number,
-      default: 0,
-    },
-  },
+      default: 0
+    }
+  }
 })
 </script>
 
@@ -60,5 +62,9 @@ export default defineComponent({
   color: #fff;
   font-size: 2vw;
   text-align: center;
+}
+
+.model-list .item-name.hide {
+  display: none;
 }
 </style>

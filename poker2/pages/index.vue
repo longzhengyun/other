@@ -10,39 +10,43 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from '@nuxtjs/composition-api'
+import { defineComponent, reactive, useRouter } from '@nuxtjs/composition-api'
 
-import { Poker, HomeState } from './../assets/@types'
-
-import GameTitle from './../components/home/GameTitle.vue'
-import GameOption from './../components/home/GameOption.vue'
+import GameTitle from '@/components/home/GameTitle.vue'
+import GameOption from '@/components/home/GameOption.vue'
 
 export default defineComponent({
   components: {
     GameTitle,
-    GameOption,
+    GameOption
   },
-  setup() {
-    const state: HomeState = reactive({
+  setup () {
+    const state = reactive({
       title: '天天斗地主',
       option: [
         { id: 1, name: 'A', value: 14, type: 0, text: '初级' },
         { id: 2, name: 'A', value: 14, type: 1, text: '中级' },
         { id: 3, name: 'A', value: 14, type: 2, text: '高级' },
-        { id: 4, name: 'A', value: 14, type: 3, text: '自由' },
+        { id: 4, name: 'A', value: 14, type: 3, text: '自由' }
       ],
-      target: 0,
+      target: 0
     })
 
-    const selectGame = (item: Poker) => {
+    const router = useRouter()
+
+    const selectGame = (item) => {
       state.target = item.id
+
+      setTimeout(() => {
+        router.push(`/room/${item.id}`)
+      }, 500)
     }
 
     return {
       state,
-      selectGame,
+      selectGame
     }
-  },
+  }
 })
 </script>
 
